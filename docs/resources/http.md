@@ -314,7 +314,7 @@ Optional:
 - `origin` (Attributes) Content source (origin) settings (see [below for nested schema](#nestedatt--locations--origin))
 - `packaging` (Attributes) Video Converting (see [below for nested schema](#nestedatt--locations--packaging))
 - `return_http_status_code` (Number) HTTP code to respond instead of content
-- `rewrite` (Attributes Set) Rewrite options for certain accounts (see [below for nested schema](#nestedatt--locations--rewrite))
+- `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--locations--rewrite))
 
 <a id="nestedatt--locations--auth"></a>
 ### Nested Schema for `locations.auth`
