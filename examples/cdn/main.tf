@@ -350,13 +350,13 @@ resource "cdnvideo_http" "edu" {
           ]
         }
       }
-      rewrite = [
-        {
-          from = "^/cdn/.+(/_video_.+)"
-          to   = "$1"
-          flag = "break"
-        }
-      ]
+      # rewrite = [
+      #   {
+      #     from = "^/cdn/.+(/_video_.+)"
+      #     to   = "$1"
+      #     flag = "break"
+      #   }
+      # ]
       return_http_status_code = 403
     }
   }

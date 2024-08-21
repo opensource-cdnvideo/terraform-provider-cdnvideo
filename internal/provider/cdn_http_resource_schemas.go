@@ -913,7 +913,7 @@ func PackagingSchema() schema.Attribute {
 
 func RewriteSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
-		Description: "Rewrite options for certain accounts",
+		Description: "This option is available upon request. Please contact your account manager",
 		Optional:    true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
