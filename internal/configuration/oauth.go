@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,13 +27,17 @@ func (proxy *ConfigurationApiProxy) GetToken(username, password *string) (*AuthR
 
 	body, err := proxy.MakeRequest(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to make request: %w", err)
 	}
 
-	ar := AuthResponse{}
+	var ar AuthResponse
 	err = json.Unmarshal(body, &ar)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to unmarshal response: %w", err)
+	}
+
+	if ar.Status != http.StatusOK {
+		return nil, fmt.Errorf("authentication failed with status: %d", ar.Status)
 	}
 
 	return &ar, nil

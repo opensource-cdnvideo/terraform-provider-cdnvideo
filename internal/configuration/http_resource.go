@@ -191,6 +191,7 @@ type Packaging struct {
 		OutputProtocols *[]string `json:"output_protocols,omitempty" tfsdk:"output_protocols"`
 	} `json:"mp4,omitempty" tfsdk:"mp4"`
 }
+
 type Rewrite struct {
 	From *string `json:"from,omitempty" tfsdk:"from"`
 	To   *string `json:"to,omitempty" tfsdk:"to"`
@@ -289,6 +290,7 @@ func (proxy *ConfigurationApiProxy) UpdateHttpResource(httpResource CdnHttpResou
 	return &response, nil
 
 }
+
 func (proxy *ConfigurationApiProxy) DeactivateHttpResource(resource_id string) error {
 	active := false
 	httpResource := CdnHttpResource{Active: &active}

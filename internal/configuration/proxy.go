@@ -19,10 +19,10 @@ type AuthStruct struct {
 	Token    string `json:"token"`
 }
 
-func NewProxy(username, password, account_name *string) (*ConfigurationApiProxy, error) {
+func NewProxy(username, password, accountName *string) (*ConfigurationApiProxy, error) {
 	proxy := ConfigurationApiProxy{
 		HTTPClient:  &http.Client{Timeout: 10 * time.Second},
-		AccountName: *account_name,
+		AccountName: *accountName,
 		Auth: AuthStruct{
 			Username: *username,
 			Password: *password,
@@ -31,7 +31,7 @@ func NewProxy(username, password, account_name *string) (*ConfigurationApiProxy,
 
 	response, err := proxy.GetToken(username, password)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get token: %w", err)
 	}
 
 	proxy.Auth.Token = response.Token
@@ -46,7 +46,12 @@ func (proxy *ConfigurationApiProxy) MakeRequest(req *http.Request) ([]byte, erro
 	if err != nil {
 		return nil, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err := res.Body.Close()
+		if err != nil {
+			fmt.Printf("Error closing response body: %v", err)
+		}
+	}()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
