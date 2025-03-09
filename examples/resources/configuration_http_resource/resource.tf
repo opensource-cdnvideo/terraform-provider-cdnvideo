@@ -1,7 +1,7 @@
 resource "cdnvideo_http" "edu" {
   origin = {
     servers = {
-      "any_example_back.com" = {
+      "google.com" = {
         port      = 443
         weight    = 1
         max_fails = 10
@@ -32,10 +32,16 @@ resource "cdnvideo_http" "edu" {
     args_whitelist = [
       "param1"
     ]
-    consider_cookies = true
+    # args_blacklist = [
+    #   "param1"
+    # ]
     cookies_whitelist = [
       "param1"
     ]
+    # cookies_blacklist = [
+    #   "param1"
+    # ]
+    consider_cookies = true
     valid = {
       c_2xx = "1d"
       c_3xx = "1d"
@@ -44,11 +50,19 @@ resource "cdnvideo_http" "edu" {
       force = false
     }
     use_stale = false
+    # stale_conditions = [
+    #   "error",
+    #   "http_500"
+    # ]
   }
   certificate        = 1
   tuning             = "default"
   modern_tls_only    = false
   strong_ssl_ciphers = false
+  # ssl_protocols      = [
+  #   "TLSv1.2",
+  #   "TLSv1.3"
+  # ]
   follow_redirects   = false
   no_http2           = false
   http2https         = false
@@ -175,6 +189,24 @@ resource "cdnvideo_http" "edu" {
       ]
     }
   }
+  # rewrite = [
+  #   {
+  #     from = "^/cdn/.+(/_video_.+)"
+  #     to   = "$1"
+  #     flag = "break"
+  #   }
+  # ]
+  allowed_http_methods = [
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE"
+  ]
+  return = {
+    http_status_code = "200",
+    body = "test1"
+    # url = "https://www.cdnvideo.ru/"
+  }
   locations = {
     "path_to_content" = {
       cache = {
@@ -183,10 +215,16 @@ resource "cdnvideo_http" "edu" {
         args_whitelist = [
           "param1"
         ]
+        # args_blacklist = [
+        #   "param1"
+        # ]
         consider_cookies = true
         cookies_whitelist = [
           "param1"
         ]
+        # cookies_blacklist = [
+        #   "param1"
+        # ]
         valid = {
           c_2xx = "1d"
           c_3xx = "1d"
@@ -195,6 +233,10 @@ resource "cdnvideo_http" "edu" {
           force = false
         }
         use_stale = false
+        # stale_conditions = [
+        #   "error",
+        #   "http_500"
+        # ]
       }
       origin = {
         servers = {
@@ -336,14 +378,24 @@ resource "cdnvideo_http" "edu" {
           ]
         }
       }
-      rewrite = [
-        {
-          from = "^/cdn/.+(/_video_.+)"
-          to   = "$1"
-          flag = "break"
-        }
+      allowed_http_methods = [
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE"
       ]
-      return_http_status_code = 403
+      return = {
+        http_status_code = "200",
+        body = "test1"
+        # url = "https://www.cdnvideo.ru/"
+      }
+      # rewrite = [
+      #   {
+      #     from = "^/cdn/.+(/_video_.+)"
+      #     to   = "$1"
+      #     flag = "break"
+      #   }
+      # ]
     }
   }
 }

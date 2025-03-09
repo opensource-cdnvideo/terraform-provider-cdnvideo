@@ -29,6 +29,7 @@ type CdnHttpResourceModel struct {
 	SliceSizeMegabytes types.Int64  `tfsdk:"slice_size_megabytes"`
 	ModernTlsOnly      types.Bool   `tfsdk:"modern_tls_only"`
 	StrongSslCiphers   types.Bool   `tfsdk:"strong_ssl_ciphers"`
+	SslProtocols       types.Set    `tfsdk:"ssl_protocols"`
 	FollowRedirects    types.Bool   `tfsdk:"follow_redirects"`
 	NoHttp2            types.Bool   `tfsdk:"no_http2"`
 	Http2Https         types.Bool   `tfsdk:"http2https"`
@@ -43,6 +44,9 @@ type CdnHttpResourceModel struct {
 	Limitations        types.Object `tfsdk:"limitations"`
 	IOSS               types.Bool   `tfsdk:"ioss"`
 	Packaging          types.Object `tfsdk:"packaging"`
+	Rewrite            types.Set    `tfsdk:"rewrite"`
+	AllowedHttpMethods types.Set    `tfsdk:"allowed_http_methods"`
+	Return             types.Object `tfsdk:"return"`
 	Locations          types.Map    `tfsdk:"locations"`
 }
 
@@ -113,8 +117,14 @@ func (m CacheModel) AttributeTypes() map[string]attr.Type {
 		"args_whitelist": types.SetType{
 			ElemType: types.StringType,
 		},
+		"args_blacklist": types.SetType{
+			ElemType: types.StringType,
+		},
 		"consider_cookies": types.BoolType,
 		"cookies_whitelist": types.SetType{
+			ElemType: types.StringType,
+		},
+		"cookies_blacklist": types.SetType{
 			ElemType: types.StringType,
 		},
 		"valid": types.ObjectType{
@@ -127,6 +137,9 @@ func (m CacheModel) AttributeTypes() map[string]attr.Type {
 			},
 		},
 		"use_stale": types.BoolType,
+		"stale_conditions": types.SetType{
+			ElemType: types.StringType,
+		},
 	}
 }
 
@@ -320,7 +333,12 @@ func (m LocationsModel) AttributeTypes() attr.Type {
 					AttrTypes: RewriteModel{}.AttributeTypes(),
 				},
 			},
-			"return_http_status_code": types.Int64Type,
+			"allowed_http_methods": types.SetType{
+				ElemType: types.StringType,
+			},
+			"return": types.ObjectType{
+				AttrTypes: ReturnModel{}.AttributeTypes(),
+			},
 		},
 	}
 }
@@ -339,6 +357,8 @@ func (m PackagingModel) AttributeTypes() map[string]attr.Type {
 	}
 }
 
+type RewriteModel struct{}
+
 func (m RewriteModel) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"from": types.StringType,
@@ -347,7 +367,15 @@ func (m RewriteModel) AttributeTypes() map[string]attr.Type {
 	}
 }
 
-type RewriteModel struct{}
+type ReturnModel struct{}
+
+func (m ReturnModel) AttributeTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"http_status_code": types.Int64Type,
+		"body":             types.StringType,
+		"url":              types.StringType,
+	}
+}
 
 func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	// TODO: Maybe use resource plan modifier
@@ -406,6 +434,7 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 				Description: "Use strong SSL ciphers (requires modern_tls_only=true)",
 				Optional:    true,
 			},
+			"ssl_protocols": SslProtocolsSchema(),
 			"follow_redirects": schema.BoolAttribute{
 				Description: "Follow redirects",
 				Optional:    true,
@@ -437,7 +466,10 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 				Description: "Image Optimization and Modification",
 				Optional:    true,
 			},
-			"packaging": PackagingSchema(),
+			"packaging":            PackagingSchema(),
+			"rewrite":              RewriteSchema(),
+			"allowed_http_methods": AllowedHttpMethodsSchema(),
+			"return":               ReturnSchema(),
 			"locations": schema.MapNestedAttribute{
 				Description: "Rules for specific request paths",
 				Optional:    true,
@@ -454,12 +486,10 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 							Description: "Image Optimization and Modification",
 							Optional:    true,
 						},
-						"packaging": PackagingSchema(),
-						"rewrite":   RewriteSchema(),
-						"return_http_status_code": schema.Int64Attribute{
-							Description: "HTTP code to respond instead of content",
-							Optional:    true,
-						},
+						"packaging":            PackagingSchema(),
+						"rewrite":              RewriteSchema(),
+						"allowed_http_methods": AllowedHttpMethodsSchema(),
+						"return":               ReturnSchema(),
 					},
 				},
 			},
@@ -481,7 +511,12 @@ func CacheSchema() schema.Attribute {
 				Optional:    true,
 			},
 			"args_whitelist": schema.SetAttribute{
-				Description: "List of query string parameters to consider when caching (requires cache.consider_args=true)",
+				Description: "List of query string parameters to consider when caching (requires cache.consider_args=true); cannot be used with args_blacklist",
+				Optional:    true,
+				ElementType: types.StringType,
+			},
+			"args_blacklist": schema.SetAttribute{
+				Description: "List of query string parameters to ignore when caching (requires cache.consider_args=true); cannot be used with args_whitelist",
 				Optional:    true,
 				ElementType: types.StringType,
 			},
@@ -490,7 +525,12 @@ func CacheSchema() schema.Attribute {
 				Optional:    true,
 			},
 			"cookies_whitelist": schema.SetAttribute{
-				Description: "List of cookie to consider when caching (requires cache.consider_cookies=true)",
+				Description: "List of cookie to consider when caching (requires cache.consider_cookies=true), cannot be used with cookies_blacklist)",
+				Optional:    true,
+				ElementType: types.StringType,
+			},
+			"cookies_blacklist": schema.SetAttribute{
+				Description: "List of cookie to ignore when caching (requires cache.consider_cookies=true; cannot be used with cookies_whitelist))",
 				Optional:    true,
 				ElementType: types.StringType,
 			},
@@ -523,6 +563,11 @@ func CacheSchema() schema.Attribute {
 			"use_stale": schema.BoolAttribute{
 				Description: "Enables/disables the ability to give outdated cached content if the origin is unavailable",
 				Optional:    true,
+			},
+			"stale_conditions": schema.SetAttribute{
+				Description: "List of options for setting conditions for returning outdated cached content in case of source unavailability (requires use_stale=true)",
+				Optional:    true,
+				ElementType: types.StringType,
 			},
 		},
 	}
@@ -774,6 +819,15 @@ func TimesSchema() schema.Attribute {
 	}
 }
 
+func SslProtocolsSchema() schema.Attribute {
+	return schema.SetAttribute{
+		Description: "List of enabled TLS versions. Allowed values: 'TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3', 'SSLv3'; cannot be used with modern_tls_only",
+		Optional:    true,
+		ElementType: types.StringType,
+	}
+}
+
+
 func LimitationsSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Description: "Restriction of distribution by geography, IP, Referer or UserAgent. This service is paid according to the tariffs indicated in dashboard",
@@ -906,6 +960,35 @@ func PackagingSchema() schema.Attribute {
 						ElementType: types.StringType,
 					},
 				},
+			},
+		},
+	}
+}
+
+func AllowedHttpMethodsSchema() schema.Attribute {
+	return schema.SetAttribute{
+		Description: "List of allowed HTTP methods. GET, HEAD and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: POST, PUT, DELETE, MKCOL, COPY, MOVE, PROPFIND, PROPPATCH, LOCK, UNLOCK, PATCH.",
+		Optional:    true,
+		ElementType: types.StringType,
+	}
+}
+
+func ReturnSchema() schema.Attribute {
+	return schema.SingleNestedAttribute{
+		Description: "HTTP response code and body for content hosted on a CDN.",
+		Optional:    true,
+		Attributes: map[string]schema.Attribute{
+			"http_status_code": schema.Int64Attribute{
+				Description: "Response status code. Valid range: 100 to 599",
+				Required:    true,
+			},
+			"body": schema.StringAttribute{
+				Description: "Response body; cannot be used with return.url",
+				Optional:    true,
+			},
+			"url": schema.StringAttribute{
+				Description: "Absolute redirect URL (only for 301, 302, 303, 307, 308 codes); cannot be used with return.body",
+				Optional:    true,
 			},
 		},
 	}

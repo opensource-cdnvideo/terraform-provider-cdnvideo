@@ -53,6 +53,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckNoResourceAttr(resource_name, "tuning"),
 					resource.TestCheckNoResourceAttr(resource_name, "modern_tls_only"),
 					resource.TestCheckNoResourceAttr(resource_name, "strong_ssl_ciphers"),
+					resource.TestCheckNoResourceAttr(resource_name, "ssl_protocols"),
 					resource.TestCheckNoResourceAttr(resource_name, "follow_redirects"),
 					resource.TestCheckNoResourceAttr(resource_name, "no_http2"),
 					resource.TestCheckNoResourceAttr(resource_name, "http2https"),
@@ -67,6 +68,9 @@ func TestResource(t *testing.T) {
 					resource.TestCheckNoResourceAttr(resource_name, "limitations"),
 					resource.TestCheckNoResourceAttr(resource_name, "ioss"),
 					resource.TestCheckNoResourceAttr(resource_name, "packaging"),
+					resource.TestCheckNoResourceAttr(resource_name, "rewrite"),
+					resource.TestCheckNoResourceAttr(resource_name, "allowed_http_methods"),
+					resource.TestCheckNoResourceAttr(resource_name, "return"),
 					resource.TestCheckNoResourceAttr(resource_name, "locations"),
 				),
 			},
@@ -118,7 +122,11 @@ func TestResource(t *testing.T) {
 							c_5xx = "1s"
 							force = false
 						}
-						use_stale = false
+						use_stale = true
+						stale_conditions = [
+							"error",
+							"http_500"
+						]
 					}
 					certificate = 1
 					tuning = "default"
@@ -250,6 +258,22 @@ func TestResource(t *testing.T) {
 							]
 						}
 					}
+					rewrite = [
+						{
+							from = "^/cdn/.+(/_video_.+)"
+							to = "$1"
+							flag = "break" 
+						}
+					]
+					allowed_http_methods = [
+						"PATCH",
+						"POST",
+						"PUT"
+					]
+					return = {
+    					http_status_code = "200",
+    					body = "test1"
+					}
 					locations = {
 						"path_to_content" = {
 							cache = {
@@ -269,7 +293,11 @@ func TestResource(t *testing.T) {
 									c_5xx = "1s"
 									force = false
 								}
-								use_stale = false
+								use_stale = true
+								stale_conditions = [
+									"error",
+									"http_500"
+								]
 							}
 							origin = {
 								servers = {
@@ -418,7 +446,15 @@ func TestResource(t *testing.T) {
 									flag = "break" 
 								}
 							]
-							return_http_status_code = 403
+							allowed_http_methods = [
+								"PATCH",
+								"POST",
+								"PUT"
+							]
+							return = {
+    							http_status_code = "200",
+    							body = "test1"
+							}
 						}
 					}
 				}`,
@@ -445,7 +481,9 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "cache.args_whitelist.0", "param1"),
 					resource.TestCheckResourceAttr(resource_name, "cache.consider_cookies", "true"),
 					resource.TestCheckResourceAttr(resource_name, "cache.cookies_whitelist.0", "param1"),
-					resource.TestCheckResourceAttr(resource_name, "cache.use_stale", "false"),
+					resource.TestCheckResourceAttr(resource_name, "cache.use_stale", "true"),
+					resource.TestCheckResourceAttr(resource_name, "cache.stale_conditions.0", "error"),
+					resource.TestCheckResourceAttr(resource_name, "cache.stale_conditions.1", "http_500"),
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.c_2xx", "1d"),
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.c_3xx", "1d"),
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.c_4xx", "1s"),
@@ -497,13 +535,23 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "limitations.useragent.0.times.0.end", "2024-01-02T00:00:00Z"),
 					resource.TestCheckResourceAttr(resource_name, "ioss", "false"),
 					resource.TestCheckResourceAttr(resource_name, "packaging.mp4.output_protocols.0", "MPEG-DASH"),
+					resource.TestCheckResourceAttr(resource_name, "rewrite.0.from", "^/cdn/.+(/_video_.+)"),
+					resource.TestCheckResourceAttr(resource_name, "rewrite.0.to", "$1"),
+					resource.TestCheckResourceAttr(resource_name, "rewrite.0.flag", "break"),
+					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.0", "PATCH"),
+					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.1", "POST"),
+					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.2", "PUT"),
+					resource.TestCheckResourceAttr(resource_name, "return.http_status_code", "200"),
+					resource.TestCheckResourceAttr(resource_name, "return.body", "test1"),
 
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.disable", "false"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.consider_args", "true"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.args_whitelist.0", "param1"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.consider_cookies", "true"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.cookies_whitelist.0", "param1"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.use_stale", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.use_stale", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.stale_conditions.0", "error"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.stale_conditions.1", "http_500"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_2xx", "1d"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_3xx", "1d"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_4xx", "1s"),
@@ -561,7 +609,11 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.from", "^/cdn/.+(/_video_.+)"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.to", "$1"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.flag", "break"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.return_http_status_code", "403"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.0", "PATCH"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.1", "POST"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.2", "PUT"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.return.http_status_code", "200"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.return.body", "test1"),
 
 					// Check computed options
 					resource.TestCheckResourceAttrSet(resource_name, "id"),
@@ -612,6 +664,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckNoResourceAttr(resource_name, "tuning"),
 					resource.TestCheckNoResourceAttr(resource_name, "modern_tls_only"),
 					resource.TestCheckNoResourceAttr(resource_name, "strong_ssl_ciphers"),
+					resource.TestCheckNoResourceAttr(resource_name, "ssl_protocols"),
 					resource.TestCheckNoResourceAttr(resource_name, "follow_redirects"),
 					resource.TestCheckNoResourceAttr(resource_name, "no_http2"),
 					resource.TestCheckNoResourceAttr(resource_name, "http2https"),
@@ -626,6 +679,9 @@ func TestResource(t *testing.T) {
 					resource.TestCheckNoResourceAttr(resource_name, "limitations"),
 					resource.TestCheckNoResourceAttr(resource_name, "ioss"),
 					resource.TestCheckNoResourceAttr(resource_name, "packaging"),
+					resource.TestCheckNoResourceAttr(resource_name, "rewrite"),
+					resource.TestCheckNoResourceAttr(resource_name, "allowed_http_methods"),
+					resource.TestCheckNoResourceAttr(resource_name, "return"),
 					resource.TestCheckNoResourceAttr(resource_name, "locations"),
 				),
 			},

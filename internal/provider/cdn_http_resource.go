@@ -213,6 +213,9 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 	cache, diags := types.ObjectValueFrom(ctx, CacheModel{}.AttributeTypes(), http_resource.Cache)
 	all_diags.Append(diags...)
 
+	sslprotocols, diags := types.SetValueFrom(ctx, types.StringType, http_resource.SslProtocols)
+	all_diags.Append(diags...)
+
 	compress, diags := types.ObjectValueFrom(ctx, CompressModel{}.AttributeTypes(), http_resource.Compress)
 	all_diags.Append(diags...)
 
@@ -235,6 +238,15 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 	all_diags.Append(diags...)
 
 	packaging, diags := types.ObjectValueFrom(ctx, PackagingModel{}.AttributeTypes(), http_resource.Packaging)
+	all_diags.Append(diags...)
+
+	rewrite, diags := types.SetValueFrom(ctx, types.ObjectType{AttrTypes: RewriteModel{}.AttributeTypes()}, http_resource.Rewrite)
+	all_diags.Append(diags...)
+
+	allowedhttpmethods, diags := types.SetValueFrom(ctx, types.StringType, http_resource.AllowedHttpMethods)
+	all_diags.Append(diags...)
+
+	resourcereturn, diags := types.ObjectValueFrom(ctx, ReturnModel{}.AttributeTypes(), http_resource.Return)
 	all_diags.Append(diags...)
 
 	state := CdnHttpResourceModel{
@@ -261,6 +273,7 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 		SliceSizeMegabytes: types.Int64PointerValue(http_resource.SliceSizeMegabytes),
 		ModernTlsOnly:      types.BoolPointerValue(http_resource.ModernTlsOnly),
 		StrongSslCiphers:   types.BoolPointerValue(http_resource.StrongSslCiphers),
+		SslProtocols:       sslprotocols,
 		FollowRedirects:    types.BoolPointerValue(http_resource.FollowRedirects),
 		NoHttp2:            types.BoolPointerValue(http_resource.NoHttp2),
 		Http2Https:         types.BoolPointerValue(http_resource.Http2Https),
@@ -275,6 +288,9 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 		Limitations:        limitations,
 		IOSS:               types.BoolPointerValue(http_resource.IOSS),
 		Packaging:          packaging,
+		Rewrite:            rewrite,
+		AllowedHttpMethods: allowedhttpmethods,
+		Return:             resourcereturn,
 		Locations:          locations,
 	}
 
@@ -294,6 +310,10 @@ func GenerateApiRequest(plan CdnHttpResourceModel, ctx context.Context) (configu
 
 	var cache *configuration.Cache = new(configuration.Cache)
 	diags = plan.Cache.As(ctx, &cache, opts)
+	all_diags.Append(diags...)
+
+	sslprotocols := make([]string, 0)
+	diags = plan.SslProtocols.ElementsAs(ctx, &sslprotocols, false)
 	all_diags.Append(diags...)
 
 	var compress *configuration.Compress = new(configuration.Compress)
@@ -332,6 +352,18 @@ func GenerateApiRequest(plan CdnHttpResourceModel, ctx context.Context) (configu
 	diags = plan.Packaging.As(ctx, &packaging, opts)
 	all_diags.Append(diags...)
 
+	rewrite := make([]configuration.Rewrite, 0)
+	diags = plan.Rewrite.ElementsAs(ctx, &rewrite, false)
+	all_diags.Append(diags...)
+
+	allowedhttpmethods := make([]string, 0)
+	diags = plan.AllowedHttpMethods.ElementsAs(ctx, &allowedhttpmethods, false)
+	all_diags.Append(diags...)
+
+	var resourcereturn *configuration.Return = new(configuration.Return)
+	diags = plan.Return.As(ctx, &resourcereturn, opts)
+	all_diags.Append(diags...)
+
 	tflog.Info(ctx, "Parsed servers")
 	http_resource_request := configuration.CdnHttpResource{
 		Name: plan.Name.ValueString(),
@@ -353,6 +385,7 @@ func GenerateApiRequest(plan CdnHttpResourceModel, ctx context.Context) (configu
 		SliceSizeMegabytes: plan.SliceSizeMegabytes.ValueInt64Pointer(),
 		ModernTlsOnly:      plan.ModernTlsOnly.ValueBoolPointer(),
 		StrongSslCiphers:   plan.StrongSslCiphers.ValueBoolPointer(),
+		SslProtocols:       sslprotocols,
 		FollowRedirects:    plan.FollowRedirects.ValueBoolPointer(),
 		NoHttp2:            plan.NoHttp2.ValueBoolPointer(),
 		Http2Https:         plan.Http2Https.ValueBoolPointer(),
@@ -367,6 +400,9 @@ func GenerateApiRequest(plan CdnHttpResourceModel, ctx context.Context) (configu
 		Limitations:        limitations,
 		IOSS:               plan.IOSS.ValueBoolPointer(),
 		Packaging:          packaging,
+		Rewrite:            rewrite,
+		AllowedHttpMethods: allowedhttpmethods,
+		Return:             resourcereturn,
 		Locations:          locations,
 	}
 	return http_resource_request, all_diags

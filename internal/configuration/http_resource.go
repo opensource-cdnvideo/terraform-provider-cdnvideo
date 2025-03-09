@@ -22,6 +22,7 @@ type CdnHttpResource struct {
 	SliceSizeMegabytes *int64               `json:"slice_size_megabytes,omitempty"`
 	ModernTlsOnly      *bool                `json:"modern_tls_only,omitempty"`
 	StrongSslCiphers   *bool                `json:"strong_ssl_ciphers,omitempty"`
+	SslProtocols       []string             `json:"ssl_protocols,omitempty"`
 	FollowRedirects    *bool                `json:"follow_redirects,omitempty"`
 	NoHttp2            *bool                `json:"no_http2,omitempty"`
 	Http2Https         *bool                `json:"http2https,omitempty"`
@@ -36,6 +37,9 @@ type CdnHttpResource struct {
 	Limitations        *Limitations         `json:"limitations,omitempty"`
 	IOSS               *bool                `json:"ioss,omitempty"`
 	Packaging          *Packaging           `json:"packaging,omitempty"`
+	Rewrite            []Rewrite            `json:"rewrite,omitempty"`
+	AllowedHttpMethods []string             `json:"allowed_http_methods,omitempty"`
+	Return             *Return              `json:"return,omitempty"`
 	Locations          map[string]Locations `json:"locations,omitempty"`
 }
 
@@ -78,8 +82,10 @@ type Cache struct {
 	Disable          *bool     `json:"disable,omitempty" tfsdk:"disable"`
 	ConsiderArgs     *bool     `json:"consider_args,omitempty" tfsdk:"consider_args"`
 	ArgsWhitelist    *[]string `json:"args_whitelist,omitempty" tfsdk:"args_whitelist"`
+	ArgsBlacklist    *[]string `json:"args_blacklist,omitempty" tfsdk:"args_blacklist"`
 	ConsiderCookies  *bool     `json:"consider_cookies,omitempty" tfsdk:"consider_cookies"`
 	CookiesWhitelist *[]string `json:"cookies_whitelist,omitempty" tfsdk:"cookies_whitelist"`
+	CookiesBlacklist *[]string `json:"cookies_blacklist,omitempty" tfsdk:"cookies_blacklist"`
 	Valid            *struct {
 		C2xx  *string `json:"2xx,omitempty" tfsdk:"c_2xx"`
 		C3xx  *string `json:"3xx,omitempty" tfsdk:"c_3xx"`
@@ -87,7 +93,8 @@ type Cache struct {
 		C5xx  *string `json:"5xx,omitempty" tfsdk:"c_5xx"`
 		Force *bool   `json:"force,omitempty" tfsdk:"force"`
 	} `json:"valid,omitempty" tfsdk:"valid"`
-	UseStale *bool `json:"use_stale,omitempty" tfsdk:"use_stale"`
+	UseStale        *bool     `json:"use_stale,omitempty" tfsdk:"use_stale"`
+	StaleConditions *[]string `json:"stale_conditions,omitempty" tfsdk:"stale_conditions"`
 }
 
 type Compress struct {
@@ -173,17 +180,18 @@ type Limitations struct {
 }
 
 type Locations struct {
-	Cache                *Cache       `json:"cache,omitempty" tfsdk:"cache"`
-	Origin               *Origin      `json:"origin,omitempty" tfsdk:"origin"`
-	Auth                 *Auth        `json:"auth,omitempty" tfsdk:"auth"`
-	Headers              *Headers     `json:"headers,omitempty" tfsdk:"headers"`
-	Cors                 *Cors        `json:"cors,omitempty" tfsdk:"cors"`
-	Limitations          *Limitations `json:"limitations,omitempty" tfsdk:"limitations"`
-	IOSS                 *bool        `json:"ioss,omitempty" tfsdk:"ioss"`
-	Packaging            *Packaging   `json:"packaging,omitempty" tfsdk:"packaging"`
-	Rewrite              *[]Rewrite   `json:"rewrite,omitempty" tfsdk:"rewrite"`
-	Compress             *Compress    `json:"compress,omitempty" tfsdk:"compress"`
-	ReturnHTTPStatusCode *int         `json:"return_http_status_code,omitempty" tfsdk:"return_http_status_code"`
+	Cache              *Cache       `json:"cache,omitempty" tfsdk:"cache"`
+	Origin             *Origin      `json:"origin,omitempty" tfsdk:"origin"`
+	Auth               *Auth        `json:"auth,omitempty" tfsdk:"auth"`
+	Headers            *Headers     `json:"headers,omitempty" tfsdk:"headers"`
+	Cors               *Cors        `json:"cors,omitempty" tfsdk:"cors"`
+	Limitations        *Limitations `json:"limitations,omitempty" tfsdk:"limitations"`
+	IOSS               *bool        `json:"ioss,omitempty" tfsdk:"ioss"`
+	Packaging          *Packaging   `json:"packaging,omitempty" tfsdk:"packaging"`
+	Rewrite            *[]Rewrite   `json:"rewrite,omitempty" tfsdk:"rewrite"`
+	Compress           *Compress    `json:"compress,omitempty" tfsdk:"compress"`
+	AllowedHttpMethods []string     `json:"allowed_http_methods,omitempty" tfsdk:"allowed_http_methods"`
+	Return             *Return      `json:"return,omitempty" tfsdk:"return"`
 }
 
 type Packaging struct {
@@ -195,6 +203,11 @@ type Rewrite struct {
 	From *string `json:"from,omitempty" tfsdk:"from"`
 	To   *string `json:"to,omitempty" tfsdk:"to"`
 	Flag *string `json:"flag,omitempty" tfsdk:"flag"`
+}
+type Return struct {
+	HttpStatusCode *int    `json:"http_status_code,omitempty" tfsdk:"http_status_code"`
+	Body           *string `json:"body,omitempty" tfsdk:"body"`
+	Url            *string `json:"url,omitempty" tfsdk:"url"`
 }
 
 func (proxy *ConfigurationApiProxy) GetHttpResources() ([]CdnHttpResource, error) {
