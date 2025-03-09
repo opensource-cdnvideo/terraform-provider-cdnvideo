@@ -35,6 +35,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resource_name, "active"),
 					resource.TestCheckResourceAttrSet(resource_name, "cdn_domain"),
 					resource.TestCheckResourceAttrSet(resource_name, "creation_ts"),
+					resource.TestCheckResourceAttrSet(resource_name, "creation_source"),
 
 					// Check all other options not set
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.weight"),
@@ -620,6 +621,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resource_name, "active"),
 					resource.TestCheckResourceAttrSet(resource_name, "cdn_domain"),
 					resource.TestCheckResourceAttrSet(resource_name, "creation_ts"),
+					resource.TestCheckResourceAttrSet(resource_name, "creation_source"),
 				),
 			},
 			// Check remove full configuration
@@ -646,6 +648,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet(resource_name, "active"),
 					resource.TestCheckResourceAttrSet(resource_name, "cdn_domain"),
 					resource.TestCheckResourceAttrSet(resource_name, "creation_ts"),
+					resource.TestCheckResourceAttrSet(resource_name, "creation_source"),
 
 					// Check all other options not set
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.weight"),

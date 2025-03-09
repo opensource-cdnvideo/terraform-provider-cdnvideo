@@ -54,6 +54,7 @@ description: |-
 - `cdn_domain` (String) CDN distribution domain
 - `creation_ts` (Number) Timestamp of resource creation
 - `id` (String) HTTP resource ID
+- `creation_source` (String) Source of resource creation (default: "terraform")
 
 <a id="nestedatt--origin"></a>
 ### Nested Schema for `origin`

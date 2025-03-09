@@ -41,6 +41,7 @@ func NewProxy(username, password, account_name *string) (*ConfigurationApiProxy,
 
 func (proxy *ConfigurationApiProxy) MakeRequest(req *http.Request) ([]byte, error) {
 	req.Header.Set("cdn-auth-token", proxy.Auth.Token)
+	req.Header.Set("X-CDN-Sender-App", "terraform")
 
 	res, err := proxy.HTTPClient.Do(req)
 	if err != nil {

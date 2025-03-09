@@ -41,6 +41,7 @@ type CdnHttpResource struct {
 	AllowedHttpMethods []string             `json:"allowed_http_methods,omitempty"`
 	Return             *Return              `json:"return,omitempty"`
 	Locations          map[string]Locations `json:"locations,omitempty"`
+	CreationSource     string               `json:"creation_source,omitempty"`
 }
 
 type CdnHttpResourceCreated struct {

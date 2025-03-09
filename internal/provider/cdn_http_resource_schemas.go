@@ -48,6 +48,7 @@ type CdnHttpResourceModel struct {
 	AllowedHttpMethods types.Set    `tfsdk:"allowed_http_methods"`
 	Return             types.Object `tfsdk:"return"`
 	Locations          types.Map    `tfsdk:"locations"`
+	CreationSource     types.String `tfsdk:"creation_source"`
 }
 
 type OriginModel struct {
@@ -491,6 +492,13 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						"allowed_http_methods": AllowedHttpMethodsSchema(),
 						"return":               ReturnSchema(),
 					},
+				},
+			},
+			"creation_source": schema.StringAttribute{
+				Description: "Source of creation, set to 'terraform' by default",
+				Computed:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 		},

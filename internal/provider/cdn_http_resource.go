@@ -73,6 +73,7 @@ func (resource *httpResource) Create(ctx context.Context, req resource.CreateReq
 	plan.Active = types.BoolPointerValue(http_resource.Active)
 	plan.CreationTs = types.Int64Value(http_resource.CreationTs)
 	plan.CdnDomain = types.StringValue(http_resource.CdnDomain)
+	plan.CreationSource = types.StringValue(http_resource.CreationSource)
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -292,6 +293,7 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 		AllowedHttpMethods: allowedhttpmethods,
 		Return:             resourcereturn,
 		Locations:          locations,
+		CreationSource:     types.StringValue(http_resource.CreationSource),
 	}
 
 	return state, all_diags
