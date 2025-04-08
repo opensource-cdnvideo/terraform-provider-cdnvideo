@@ -205,9 +205,10 @@ resource "cdnvideo_http" "edu" {
   }
   # rewrite = [
   #   {
-  #     from = "^/cdn/.+(/_video_.+)"
-  #     to   = "$1"
-  #     flag = "break"
+  #     from  = "^/cdn/.+(/_video_.+)"
+  #     to    = "$1"
+  #     flag  = "break"
+  #     scope = "edge"
   #   }
   # ]
   allowed_http_methods = [
@@ -405,9 +406,10 @@ resource "cdnvideo_http" "edu" {
       }
       # rewrite = [
       #   {
-      #     from = "^/cdn/.+(/_video_.+)"
-      #     to   = "$1"
-      #     flag = "break"
+      #     from  = "^/cdn/.+(/_video_.+)"
+      #     to    = "$1"
+      #     flag  = "break"
+      #     scope = "edge"
       #   }
       # ]
     }

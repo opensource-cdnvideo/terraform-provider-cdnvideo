@@ -1,3 +1,5 @@
-## 0.1.0 (Unreleased)
+## 1.2.0
 
 FEATURES:
+
+- Added "scope" parameter for the rewrite option

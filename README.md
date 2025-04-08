@@ -53,7 +53,7 @@ It's recommended to use the [latest version of Terraform](https://developer.hash
      required_providers {
        cdnvideo = {
          source  = "opensource-cdnvideo/cdnvideo"
-         version = "1.0.1"   # specify the version (select from https://github.com/opensource-cdnvideo/terraform-provider-cdnvideo/releases)
+         version = "1.2.0"   # specify the version (select from https://github.com/opensource-cdnvideo/terraform-provider-cdnvideo/releases)
        }
      }
    }

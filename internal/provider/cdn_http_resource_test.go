@@ -264,6 +264,7 @@ func TestResource(t *testing.T) {
 							from = "^/cdn/.+(/_video_.+)"
 							to = "$1"
 							flag = "break" 
+							scope = "edge"
 						}
 					]
 					allowed_http_methods = [
@@ -444,7 +445,8 @@ func TestResource(t *testing.T) {
 								{
 									from = "^/cdn/.+(/_video_.+)"
 									to = "$1"
-									flag = "break" 
+									flag = "break"
+									scope = "edge"
 								}
 							]
 							allowed_http_methods = [
@@ -539,6 +541,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "rewrite.0.from", "^/cdn/.+(/_video_.+)"),
 					resource.TestCheckResourceAttr(resource_name, "rewrite.0.to", "$1"),
 					resource.TestCheckResourceAttr(resource_name, "rewrite.0.flag", "break"),
+					resource.TestCheckResourceAttr(resource_name, "rewrite.0.scope", "edge"),
 					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.0", "PATCH"),
 					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.1", "POST"),
 					resource.TestCheckResourceAttr(resource_name, "allowed_http_methods.2", "PUT"),
@@ -610,6 +613,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.from", "^/cdn/.+(/_video_.+)"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.to", "$1"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.flag", "break"),
+					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.scope", "edge"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.0", "PATCH"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.1", "POST"),
 					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.2", "PUT"),

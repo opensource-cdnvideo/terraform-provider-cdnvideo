@@ -54,7 +54,7 @@ description: |-
 - `cdn_domain` (String) CDN distribution domain
 - `creation_ts` (Number) Timestamp of resource creation
 - `id` (String) HTTP resource ID
-- `creation_source` (String) Source of resource creation (default: "terraform")
+- `creation_source` (String) Source of resource creation (default: `terraform`)
 
 <a id="nestedatt--origin"></a>
 ### Nested Schema for `origin`
@@ -355,13 +355,14 @@ Optional:
 - `flag` (String) Rewrite option
 - `from` (String) Regex for the source URL
 - `to` (String) Address to which the redirection will occur
+- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins; Allowed values: `edge`, `shield` (default: `edge`); `scope` = `shield` value can only be set for a limited list of accounts
 
 <a id="nestedatt--allowed_http_methods"></a>
 ### Nested Schema for `allowed_http_methods`
 
 Description:
 
-- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`.
+- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`
 
 
 <a id="nestedatt--return"></a>
@@ -673,13 +674,14 @@ Optional:
 - `flag` (String) Rewrite option
 - `from` (String) Regex for the source URL
 - `to` (String) Address to which the redirection will occur
+- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins; Allowed values: `edge`, `shield` (default: `edge`); `scope` = `shield` value can only be set for a limited list of accounts
 
 <a id="nestedatt--locations--allowed_http_methods"></a>
 ### Nested Schema for `locations.allowed_http_methods`
 
 Description:
 
-- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`.
+- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`
 
 
 <a id="nestedatt--locations--return"></a>

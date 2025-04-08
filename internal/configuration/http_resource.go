@@ -201,9 +201,10 @@ type Packaging struct {
 	} `json:"mp4,omitempty" tfsdk:"mp4"`
 }
 type Rewrite struct {
-	From *string `json:"from,omitempty" tfsdk:"from"`
-	To   *string `json:"to,omitempty" tfsdk:"to"`
-	Flag *string `json:"flag,omitempty" tfsdk:"flag"`
+	From  *string `json:"from,omitempty" tfsdk:"from"`
+	To    *string `json:"to,omitempty" tfsdk:"to"`
+	Flag  *string `json:"flag,omitempty" tfsdk:"flag"`
+	Scope *string `json:"scope,omitempty" tfsdk:"scope"`
 }
 type Return struct {
 	HttpStatusCode *int    `json:"http_status_code,omitempty" tfsdk:"http_status_code"`

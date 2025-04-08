@@ -362,9 +362,10 @@ type RewriteModel struct{}
 
 func (m RewriteModel) AttributeTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"from": types.StringType,
-		"to":   types.StringType,
-		"flag": types.StringType,
+		"from":  types.StringType,
+		"to":    types.StringType,
+		"flag":  types.StringType,
+		"scope": types.StringType,
 	}
 }
 
@@ -835,7 +836,6 @@ func SslProtocolsSchema() schema.Attribute {
 	}
 }
 
-
 func LimitationsSchema() schema.Attribute {
 	return schema.SingleNestedAttribute{
 		Description: "Restriction of distribution by geography, IP, Referer or UserAgent. This service is paid according to the tariffs indicated in dashboard",
@@ -1009,15 +1009,19 @@ func RewriteSchema() schema.Attribute {
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{
 				"from": schema.StringAttribute{
-					Description: "Rewrite option",
+					Description: "Regex for the source URL",
 					Optional:    true,
 				},
 				"to": schema.StringAttribute{
-					Description: "Rewrite option",
+					Description: "Address to which the redirection will occur",
 					Optional:    true,
 				},
 				"flag": schema.StringAttribute{
 					Description: "Rewrite option",
+					Optional:    true,
+				},
+				"scope": schema.StringAttribute{
+					Description: "The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins",
 					Optional:    true,
 				},
 			},
