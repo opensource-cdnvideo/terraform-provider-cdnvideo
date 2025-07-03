@@ -53,16 +53,17 @@ type CdnHttpResourceCreated struct {
 }
 
 type Origin struct {
-	Servers        map[string]Servers `json:"servers,omitempty" tfsdk:"servers"`
-	Hostname       *string            `json:"hostname,omitempty" tfsdk:"hostname"`
-	HTTPS          *bool              `json:"https,omitempty" tfsdk:"https"`
-	SNIHostname    *string            `json:"sni_hostname,omitempty" tfsdk:"sni_hostname"`
-	ReadTimeout    *string            `json:"read_timeout,omitempty" tfsdk:"read_timeout"`
-	SendTimeout    *string            `json:"send_timeout,omitempty" tfsdk:"send_timeout"`
-	ConnectTimeout *string            `json:"connect_timeout,omitempty" tfsdk:"connect_timeout"`
-	AWS            *AWS               `json:"aws,omitempty" tfsdk:"aws"`
-	S3Bucket       *string            `json:"s3_bucket,omitempty" tfsdk:"s3_bucket"`
-	SSLVerify      *bool              `json:"ssl_verify,omitempty" tfsdk:"ssl_verify"`
+	Servers           map[string]Servers `json:"servers,omitempty" tfsdk:"servers"`
+	Hostname          *string            `json:"hostname,omitempty" tfsdk:"hostname"`
+	HTTPS             *bool              `json:"https,omitempty" tfsdk:"https"`
+	SNIHostname       *string            `json:"sni_hostname,omitempty" tfsdk:"sni_hostname"`
+	ReadTimeout       *string            `json:"read_timeout,omitempty" tfsdk:"read_timeout"`
+	SendTimeout       *string            `json:"send_timeout,omitempty" tfsdk:"send_timeout"`
+	ConnectTimeout    *string            `json:"connect_timeout,omitempty" tfsdk:"connect_timeout"`
+	AWS               *AWS               `json:"aws,omitempty" tfsdk:"aws"`
+	S3Bucket          *string            `json:"s3_bucket,omitempty" tfsdk:"s3_bucket"`
+	SSLVerify         *bool              `json:"ssl_verify,omitempty" tfsdk:"ssl_verify"`
+	ForwardHostHeader *bool              `json:"forward_host_header,omitempty" tfsdk:"forward_host_header"`
 }
 
 type AWS struct {
@@ -88,11 +89,12 @@ type Cache struct {
 	CookiesWhitelist *[]string `json:"cookies_whitelist,omitempty" tfsdk:"cookies_whitelist"`
 	CookiesBlacklist *[]string `json:"cookies_blacklist,omitempty" tfsdk:"cookies_blacklist"`
 	Valid            *struct {
-		C2xx  *string `json:"2xx,omitempty" tfsdk:"c_2xx"`
-		C3xx  *string `json:"3xx,omitempty" tfsdk:"c_3xx"`
-		C4xx  *string `json:"4xx,omitempty" tfsdk:"c_4xx"`
-		C5xx  *string `json:"5xx,omitempty" tfsdk:"c_5xx"`
-		Force *bool   `json:"force,omitempty" tfsdk:"force"`
+		C2xx    *string `json:"2xx,omitempty" tfsdk:"c_2xx"`
+		C3xx    *string `json:"3xx,omitempty" tfsdk:"c_3xx"`
+		C4xx    *string `json:"4xx,omitempty" tfsdk:"c_4xx"`
+		C5xx    *string `json:"5xx,omitempty" tfsdk:"c_5xx"`
+		Force   *bool   `json:"force,omitempty" tfsdk:"force"`
+		Browser *string `json:"browser,omitempty" tfsdk:"browser"`
 	} `json:"valid,omitempty" tfsdk:"valid"`
 	UseStale        *bool     `json:"use_stale,omitempty" tfsdk:"use_stale"`
 	StaleConditions *[]string `json:"stale_conditions,omitempty" tfsdk:"stale_conditions"`
@@ -193,6 +195,7 @@ type Locations struct {
 	Compress           *Compress    `json:"compress,omitempty" tfsdk:"compress"`
 	AllowedHttpMethods []string     `json:"allowed_http_methods,omitempty" tfsdk:"allowed_http_methods"`
 	Return             *Return      `json:"return,omitempty" tfsdk:"return"`
+	Order              *int64       `json:"order,omitempty" tfsdk:"order"`
 }
 
 type Packaging struct {

@@ -37,6 +37,7 @@ resource "cdnvideo_http" "edu" {
     }
     s3_bucket  = "string"
     ssl_verify = false
+    forward_host_header = false
   }
   name   = "testname"
   active = true
@@ -62,6 +63,7 @@ resource "cdnvideo_http" "edu" {
       c_4xx = "1s"
       c_5xx = "1s"
       force = false
+      browser = "3600s"
     }
     use_stale = false
     # stale_conditions = [
@@ -223,7 +225,8 @@ resource "cdnvideo_http" "edu" {
     # url = "https://www.cdnvideo.ru/"
   }
   locations = {
-    "path_to_content" = {
+    "~path_to_content" = {
+      order = 1
       cache = {
         disable       = false
         consider_args = true
@@ -246,6 +249,7 @@ resource "cdnvideo_http" "edu" {
           c_4xx = "1s"
           c_5xx = "1s"
           force = false
+          browser = "3600s"
         }
         use_stale = false
         # stale_conditions = [
@@ -277,6 +281,7 @@ resource "cdnvideo_http" "edu" {
         }
         s3_bucket  = "string"
         ssl_verify = false
+        forward_host_header = false
       }
       auth = {
         md5 = {

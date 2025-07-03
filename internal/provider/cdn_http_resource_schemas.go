@@ -52,16 +52,17 @@ type CdnHttpResourceModel struct {
 }
 
 type OriginModel struct {
-	Servers        types.Map    `tfsdk:"servers"`
-	Hostname       types.String `tfsdk:"hostname"`
-	HTTPS          types.Bool   `tfsdk:"https"`
-	SNIHostname    types.String `tfsdk:"sni_hostname"`
-	ReadTimeout    types.String `tfsdk:"read_timeout"`
-	SendTimeout    types.String `tfsdk:"send_timeout"`
-	ConnectTimeout types.String `tfsdk:"connect_timeout"`
-	AWS            types.Object `tfsdk:"aws"`
-	S3Bucket       types.String `tfsdk:"s3_bucket"`
-	SSLVerify      types.Bool   `tfsdk:"ssl_verify"`
+	Servers           types.Map    `tfsdk:"servers"`
+	Hostname          types.String `tfsdk:"hostname"`
+	HTTPS             types.Bool   `tfsdk:"https"`
+	SNIHostname       types.String `tfsdk:"sni_hostname"`
+	ReadTimeout       types.String `tfsdk:"read_timeout"`
+	SendTimeout       types.String `tfsdk:"send_timeout"`
+	ConnectTimeout    types.String `tfsdk:"connect_timeout"`
+	AWS               types.Object `tfsdk:"aws"`
+	S3Bucket          types.String `tfsdk:"s3_bucket"`
+	SSLVerify         types.Bool   `tfsdk:"ssl_verify"`
+	ForwardHostHeader types.Bool   `tfsdk:"forward_host_header"`
 }
 
 func (m OriginModel) AttributeTypes() map[string]attr.Type {
@@ -78,8 +79,9 @@ func (m OriginModel) AttributeTypes() map[string]attr.Type {
 		"aws": types.ObjectType{
 			AttrTypes: AWSModel{}.AttributeTypes(),
 		},
-		"s3_bucket":  types.StringType,
-		"ssl_verify": types.BoolType,
+		"s3_bucket":           types.StringType,
+		"ssl_verify":          types.BoolType,
+		"forward_host_header": types.BoolType,
 	}
 }
 
@@ -130,11 +132,12 @@ func (m CacheModel) AttributeTypes() map[string]attr.Type {
 		},
 		"valid": types.ObjectType{
 			AttrTypes: map[string]attr.Type{
-				"c_2xx": types.StringType,
-				"c_3xx": types.StringType,
-				"c_4xx": types.StringType,
-				"c_5xx": types.StringType,
-				"force": types.BoolType,
+				"c_2xx":   types.StringType,
+				"c_3xx":   types.StringType,
+				"c_4xx":   types.StringType,
+				"c_5xx":   types.StringType,
+				"force":   types.BoolType,
+				"browser": types.StringType,
 			},
 		},
 		"use_stale": types.BoolType,
@@ -340,6 +343,7 @@ func (m LocationsModel) AttributeTypes() attr.Type {
 			"return": types.ObjectType{
 				AttrTypes: ReturnModel{}.AttributeTypes(),
 			},
+			"order": types.Int64Type,
 		},
 	}
 }
@@ -492,6 +496,10 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 						"rewrite":              RewriteSchema(),
 						"allowed_http_methods": AllowedHttpMethodsSchema(),
 						"return":               ReturnSchema(),
+						"order": schema.Int64Attribute{
+							Description: "Order of regular expression matching (specified only for locations with regular expressions)",
+							Optional:    true,
+						},
 					},
 				},
 			},
@@ -565,6 +573,10 @@ func CacheSchema() schema.Attribute {
 					},
 					"force": schema.BoolAttribute{
 						Description: "Ignore cache headers",
+						Optional:    true,
+					},
+					"browser": schema.StringAttribute{
+						Description: "Cache time in end-users' browsers (applies to response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308)",
 						Optional:    true,
 					},
 				},
@@ -660,6 +672,10 @@ func OriginSchema(required, optional bool) schema.Attribute {
 			},
 			"ssl_verify": schema.BoolAttribute{
 				Description: "Should check origins certificate (requires origin.https=true)",
+				Optional:    true,
+			},
+			"forward_host_header": schema.BoolAttribute{
+				Description: "Should the request to the Origin include the Host header that was sent in the request to the CDN (cannot be set together with origin.hostname)",
 				Optional:    true,
 			},
 		},

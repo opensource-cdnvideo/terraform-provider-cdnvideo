@@ -103,6 +103,7 @@ func TestResource(t *testing.T) {
 						}
 						s3_bucket = "string"
 						ssl_verify = false
+						forward_host_header = false
 					}
 					name = "testname"
 					active = true
@@ -122,6 +123,7 @@ func TestResource(t *testing.T) {
 							c_4xx = "1s"
 							c_5xx = "1s"
 							force = false
+							browser = "3600s"
 						}
 						use_stale = true
 						stale_conditions = [
@@ -277,7 +279,8 @@ func TestResource(t *testing.T) {
     					body = "test1"
 					}
 					locations = {
-						"path_to_content" = {
+						"~path_to_content" = {
+							order = 1
 							cache = {
 								disable = false
 								consider_args = true
@@ -294,6 +297,7 @@ func TestResource(t *testing.T) {
 									c_4xx = "1s"
 									c_5xx = "1s"
 									force = false
+									browser = "3600s"
 								}
 								use_stale = true
 								stale_conditions = [
@@ -325,6 +329,7 @@ func TestResource(t *testing.T) {
 								}
 								s3_bucket  = "string"
 								ssl_verify = false
+								forward_host_header = false
 							}
 							auth = {
 								md5 = {
@@ -478,6 +483,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "origin.aws.auth.secret_key", "string"),
 					resource.TestCheckResourceAttr(resource_name, "origin.s3_bucket", "string"),
 					resource.TestCheckResourceAttr(resource_name, "origin.ssl_verify", "false"),
+					resource.TestCheckResourceAttr(resource_name, "origin.forward_host_header", "false"),
 					resource.TestCheckResourceAttr(resource_name, "name", "testname"),
 					resource.TestCheckResourceAttr(resource_name, "cache.disable", "false"),
 					resource.TestCheckResourceAttr(resource_name, "cache.consider_args", "true"),
@@ -492,6 +498,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.c_4xx", "1s"),
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.c_5xx", "1s"),
 					resource.TestCheckResourceAttr(resource_name, "cache.valid.force", "false"),
+					resource.TestCheckResourceAttr(resource_name, "cache.valid.browser", "3600s"),
 					resource.TestCheckResourceAttr(resource_name, "certificate", "1"),
 					resource.TestCheckResourceAttr(resource_name, "tuning", "default"),
 					resource.TestCheckResourceAttr(resource_name, "modern_tls_only", "false"),
@@ -548,77 +555,80 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "return.http_status_code", "200"),
 					resource.TestCheckResourceAttr(resource_name, "return.body", "test1"),
 
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.disable", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.consider_args", "true"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.args_whitelist.0", "param1"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.consider_cookies", "true"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.cookies_whitelist.0", "param1"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.use_stale", "true"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.stale_conditions.0", "error"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.stale_conditions.1", "http_500"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_2xx", "1d"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_3xx", "1d"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_4xx", "1s"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.c_5xx", "1s"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cache.valid.force", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.servers.google.com.port", "443"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.servers.google.com.weight", "1"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.servers.google.com.max_fails", "10"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.servers.google.com.backup", "false"),
-					resource.TestCheckResourceAttrSet(resource_name, "locations.path_to_content.origin.servers.storage.yandexcloud.net.%"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.hostname", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.https", "true"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.sni_hostname", "custom-host.com"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.read_timeout", "10s"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.send_timeout", "10s"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.connect_timeout", "10s"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.aws.auth.access_key", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.aws.auth.secret_key", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.s3_bucket", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.origin.ssl_verify", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.order", "1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.disable", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.consider_args", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.args_whitelist.0", "param1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.consider_cookies", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.cookies_whitelist.0", "param1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.use_stale", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.stale_conditions.0", "error"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.stale_conditions.1", "http_500"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.c_2xx", "1d"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.c_3xx", "1d"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.c_4xx", "1s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.c_5xx", "1s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.force", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cache.valid.browser", "3600s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.port", "443"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.weight", "1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.max_fails", "10"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.backup", "false"),
+					resource.TestCheckResourceAttrSet(resource_name, "locations.~path_to_content.origin.servers.storage.yandexcloud.net.%"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.hostname", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.https", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.sni_hostname", "custom-host.com"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.read_timeout", "10s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.send_timeout", "10s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.connect_timeout", "10s"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.aws.auth.access_key", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.aws.auth.secret_key", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.s3_bucket", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.ssl_verify", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.forward_host_header", "false"),
 
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.auth.md5.secret", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.auth.md5.forever", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.auth.md5.anywhere", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.headers.request.header_name", "header_value"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.headers.response.header_name", "header_value"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.headers.hide_in_response.0", "header-to-hide"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.domains.0", "example.com"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.headers.0", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.expose.0", "string"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.methods.0", "STRING"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.credentials", "true"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.max_age", "120"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.cors.disable", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.default_action", "allow"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.exclude.0.action", "deny"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.exclude.0.country", "RU"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.exclude.0.region", "BEL"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.times.0.start", "2024-01-01T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.geo.0.times.0.end", "2024-01-02T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.ip.0.default_action", "allow"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.ip.0.exclude.0.ip", "192.168.0.1/24"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.ip.0.times.0.start", "2024-01-01T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.ip.0.times.0.end", "2024-01-02T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.referer.0.default_action", "allow"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.referer.0.exclude.0.referer", "*.ru"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.referer.0.times.0.start", "2024-01-01T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.referer.0.times.0.end", "2024-01-02T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.useragent.0.default_action", "allow"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.useragent.0.exclude.0.useragent", "browser_name"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.useragent.0.times.0.start", "2024-01-01T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.limitations.useragent.0.times.0.end", "2024-01-02T00:00:00Z"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.ioss", "false"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.packaging.mp4.output_protocols.0", "MPEG-DASH"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.from", "^/cdn/.+(/_video_.+)"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.to", "$1"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.flag", "break"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.rewrite.0.scope", "edge"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.0", "PATCH"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.1", "POST"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.allowed_http_methods.2", "PUT"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.return.http_status_code", "200"),
-					resource.TestCheckResourceAttr(resource_name, "locations.path_to_content.return.body", "test1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.auth.md5.secret", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.auth.md5.forever", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.auth.md5.anywhere", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.headers.request.header_name", "header_value"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.headers.response.header_name", "header_value"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.headers.hide_in_response.0", "header-to-hide"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.domains.0", "example.com"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.headers.0", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.expose.0", "string"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.methods.0", "STRING"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.credentials", "true"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.max_age", "120"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.disable", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.default_action", "allow"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.exclude.0.action", "deny"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.exclude.0.country", "RU"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.exclude.0.region", "BEL"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.times.0.start", "2024-01-01T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.times.0.end", "2024-01-02T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.ip.0.default_action", "allow"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.ip.0.exclude.0.ip", "192.168.0.1/24"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.ip.0.times.0.start", "2024-01-01T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.ip.0.times.0.end", "2024-01-02T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.referer.0.default_action", "allow"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.referer.0.exclude.0.referer", "*.ru"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.referer.0.times.0.start", "2024-01-01T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.referer.0.times.0.end", "2024-01-02T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.useragent.0.default_action", "allow"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.useragent.0.exclude.0.useragent", "browser_name"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.useragent.0.times.0.start", "2024-01-01T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.useragent.0.times.0.end", "2024-01-02T00:00:00Z"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.ioss", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.packaging.mp4.output_protocols.0", "MPEG-DASH"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.rewrite.0.from", "^/cdn/.+(/_video_.+)"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.rewrite.0.to", "$1"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.rewrite.0.flag", "break"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.rewrite.0.scope", "edge"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.allowed_http_methods.0", "PATCH"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.allowed_http_methods.1", "POST"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.allowed_http_methods.2", "PUT"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.return.http_status_code", "200"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.return.body", "test1"),
 
 					// Check computed options
 					resource.TestCheckResourceAttrSet(resource_name, "id"),
@@ -666,6 +676,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckNoResourceAttr(resource_name, "origin.aws"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.s3_bucket"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.ssl_verify"),
+					resource.TestCheckNoResourceAttr(resource_name, "origin.forward_host_header"),
 					resource.TestCheckNoResourceAttr(resource_name, "cache"),
 					resource.TestCheckNoResourceAttr(resource_name, "certificate"),
 					resource.TestCheckNoResourceAttr(resource_name, "tuning"),
