@@ -12,3 +12,9 @@ FEATURES:
 - Added "forward_host_header" parameter for origin option 
 - Added "browser" parameter for cache -> valid option 
 - Added "order" parameter only for location option 
+
+## 1.4.0
+
+FEATURES:
+
+- Added "always" parameter for the cors option

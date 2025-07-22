@@ -134,6 +134,7 @@ type Cors struct {
 	Credentials *bool     `json:"credentials,omitempty" tfsdk:"credentials"`
 	MaxAge      *int64    `json:"max_age,omitempty" tfsdk:"max_age"`
 	Disable     *bool     `json:"disable,omitempty" tfsdk:"disable"`
+	Always      *bool     `json:"always,omitempty" tfsdk:"always"`
 }
 
 type Times struct {

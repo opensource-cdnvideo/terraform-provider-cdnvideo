@@ -35,8 +35,8 @@ resource "cdnvideo_http" "edu" {
         secret_key = "string"
       }
     }
-    s3_bucket  = "string"
-    ssl_verify = false
+    s3_bucket           = "string"
+    ssl_verify          = false
     forward_host_header = false
   }
   name   = "testname"
@@ -58,11 +58,11 @@ resource "cdnvideo_http" "edu" {
     # ]
     consider_cookies = true
     valid = {
-      c_2xx = "1d"
-      c_3xx = "1d"
-      c_4xx = "1s"
-      c_5xx = "1s"
-      force = false
+      c_2xx   = "1d"
+      c_3xx   = "1d"
+      c_4xx   = "1s"
+      c_5xx   = "1s"
+      force   = false
       browser = "3600s"
     }
     use_stale = false
@@ -79,11 +79,11 @@ resource "cdnvideo_http" "edu" {
   #   "TLSv1.2",
   #   "TLSv1.3"
   # ]
-  follow_redirects   = false
-  no_http2           = false
-  http2https         = false
-  https_only         = false
-  use_http3          = false
+  follow_redirects = false
+  no_http2         = false
+  http2https       = false
+  https_only       = false
+  use_http3        = false
   compress = {
     brotli = false
     gzip   = true
@@ -125,6 +125,7 @@ resource "cdnvideo_http" "edu" {
     credentials = true
     max_age     = 120
     disable     = false
+    always      = true
   }
   names = [
     "cdn.test.com"
@@ -221,7 +222,7 @@ resource "cdnvideo_http" "edu" {
   ]
   return = {
     http_status_code = "200",
-    body = "test1"
+    body             = "test1"
     # url = "https://www.cdnvideo.ru/"
   }
   locations = {
@@ -244,11 +245,11 @@ resource "cdnvideo_http" "edu" {
         #   "param1"
         # ]
         valid = {
-          c_2xx = "1d"
-          c_3xx = "1d"
-          c_4xx = "1s"
-          c_5xx = "1s"
-          force = false
+          c_2xx   = "1d"
+          c_3xx   = "1d"
+          c_4xx   = "1s"
+          c_5xx   = "1s"
+          force   = false
           browser = "3600s"
         }
         use_stale = false
@@ -279,8 +280,8 @@ resource "cdnvideo_http" "edu" {
             secret_key = "string"
           }
         }
-        s3_bucket  = "string"
-        ssl_verify = false
+        s3_bucket           = "string"
+        ssl_verify          = false
         forward_host_header = false
       }
       auth = {
@@ -317,6 +318,7 @@ resource "cdnvideo_http" "edu" {
         credentials = true
         max_age     = 120
         disable     = false
+        always      = true
       }
       limitations = {
         geo = [
@@ -406,7 +408,7 @@ resource "cdnvideo_http" "edu" {
       ]
       return = {
         http_status_code = "200",
-        body = "test1"
+        body             = "test1"
         # url = "https://www.cdnvideo.ru/"
       }
       # rewrite = [

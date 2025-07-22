@@ -23,6 +23,7 @@ description: |-
 ### Optional
 
 - `active` (Boolean) Is the resource active
+- `allowed_http_methods` (Set of String) List of allowed HTTP methods. GET, HEAD and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: POST, PUT, DELETE, MKCOL, COPY, MOVE, PROPFIND, PROPPATCH, LOCK, UNLOCK, PATCH.
 - `auth` (Attributes) User request authorization settings. This service is paid according to the tariffs indicated in dashboard. (see [below for nested schema](#nestedatt--auth))
 - `cache` (Attributes) Cache settings (see [below for nested schema](#nestedatt--cache))
 - `certificate` (Number) ID of the SSL Certificate to be bound to the resource
@@ -39,22 +40,21 @@ description: |-
 - `names` (Set of String) CNAMEs for CDN domain
 - `no_http2` (Boolean) Disable HTTP2
 - `packaging` (Attributes) Video Converting (see [below for nested schema](#nestedatt--packaging))
+- `return` (Attributes) HTTP response code and body for content hosted on a CDN. (see [below for nested schema](#nestedatt--return))
+- `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--rewrite))
 - `robots` (Attributes) robots.txt settings (see [below for nested schema](#nestedatt--robots))
 - `slice_size_megabytes` (Number) Slice size in MB (only for tuning=large)
+- `ssl_protocols` (Set of String) List of enabled TLS versions. Allowed values: 'TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3', 'SSLv3'; cannot be used with modern_tls_only
 - `strong_ssl_ciphers` (Boolean) Use strong SSL ciphers (requires modern_tls_only=true)
-- `ssl_protocols` (Set of String) List of valid TLS versions (see [below for nested schema](#nestedatt--ssl_protocols))
 - `tuning` (String) Optimization of distribution. One of [default, large, live]
 - `use_http3` (Boolean) Use HTTP3
-- `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--rewrite))
-- `allowed_http_methods` (Set of String) List of allowed HTTP methods (see [below for nested schema](#nestedatt--allowed_http_methods))
-- `return` (Attributes) Force return instead of content (see [below for nested schema](#nestedatt--return))
 
 ### Read-Only
 
 - `cdn_domain` (String) CDN distribution domain
+- `creation_source` (String) Source of creation, set to 'terraform' by default
 - `creation_ts` (Number) Timestamp of resource creation
 - `id` (String) HTTP resource ID
-- `creation_source` (String) Source of resource creation (default: `terraform`)
 
 <a id="nestedatt--origin"></a>
 ### Nested Schema for `origin`
@@ -67,6 +67,7 @@ Optional:
 
 - `aws` (Attributes) Parameters for using AWS authorization when requesting origin (see [below for nested schema](#nestedatt--origin--aws))
 - `connect_timeout` (String) Connect timeout in seconds
+- `forward_host_header` (Boolean) Should the request to the Origin include the Host header that was sent in the request to the CDN (cannot be set together with origin.hostname)
 - `hostname` (String) Host header when requesting origin
 - `https` (Boolean) Whether to use HTTPS when requesting origin
 - `read_timeout` (String) Read timeout in seconds
@@ -129,15 +130,15 @@ Optional:
 
 Optional:
 
-- `args_whitelist` (Set of String) List of query string parameters to consider when caching (requires cache.consider_args=true); cannot be used with `args_blacklist`
-- `args_blacklist` (Set of String) List of query string parameters to ignore when caching (requires cache.consider_args=true); cannot be used with `args_whitelist`
+- `args_blacklist` (Set of String) List of query string parameters to ignore when caching (requires cache.consider_args=true); cannot be used with args_whitelist
+- `args_whitelist` (Set of String) List of query string parameters to consider when caching (requires cache.consider_args=true); cannot be used with args_blacklist
 - `consider_args` (Boolean) Consider query string in caching
 - `consider_cookies` (Boolean) Consider cookies in caching
-- `cookies_whitelist` (Set of String) List of cookie to consider when caching (requires cache.consider_cookies=true); cannot be used with `cookies_blacklist`
-- `cookies_blacklist` (Set of String) List of cookie to ignore when caching (requires cache.consider_cookies=true); cannot be used with `cookies_whitelist`
+- `cookies_blacklist` (Set of String) List of cookie to ignore when caching (requires cache.consider_cookies=true; cannot be used with cookies_whitelist))
+- `cookies_whitelist` (Set of String) List of cookie to consider when caching (requires cache.consider_cookies=true), cannot be used with cookies_blacklist)
 - `disable` (Boolean) Do not cache content
+- `stale_conditions` (Set of String) List of options for setting conditions for returning outdated cached content in case of source unavailability (requires use_stale=true)
 - `use_stale` (Boolean) Enables/disables the ability to give outdated cached content if the origin is unavailable
-- `stale_conditions` (Set of String) List of options for setting conditions for returning outdated cached content in case of source unavailability (requires cache.staleconditions=true) (see [below for nested schema](#nestedatt--cache--stale_conditions))
 - `valid` (Attributes) Cache time settings (see [below for nested schema](#nestedatt--cache--valid))
 
 <a id="nestedatt--cache--valid"></a>
@@ -145,27 +146,13 @@ Optional:
 
 Optional:
 
+- `browser` (String) Cache time in end-users' browsers (applies to response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308)
 - `c_2xx` (String) Cache time for 2xx codes
 - `c_3xx` (String) Cache time for 3xx codes
 - `c_4xx` (String) Cache time for 4xx codes
 - `c_5xx` (String) Cache time for 5xx codes
 - `force` (Boolean) Ignore cache headers
 
-
-<a id="nestedatt--cache--stale_conditions"></a>
-### Nested Schema for `cache.stale_conditions`
-
-Description:
-
-- List of options for setting conditions for returning outdated cached content in case of source unavailability (requires cache.use_stale=true). Allowed settings: `error`, `timeout`, `invalid_header`, `updating`, `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, `http_504`
-
-
-<a id="nestedatt--ssl_protocols"></a>
-### Nested Schema for `ssl_protocols`
-
-Description:
-
-- List of valid TLS versions. Allowed values: `TLSv1`, `TLSv1.1`, `TLSv1.2`, `TLSv1.3`, `SSLv3`; cannot be used with `modern_tls_only`
 
 
 <a id="nestedatt--compress"></a>
@@ -177,23 +164,12 @@ Optional:
 - `gzip` (Boolean) Use Gzip compression
 
 
-<a id="nestedatt--robots"></a>
-### Nested Schema for `robots`
-
-Required:
-
-- `type` (String) Type of robots.txt handling. One of [deny, custom, cached]
-
-Optional:
-
-- `robots_content` (String) Text of robots.txt (only for type=custom)
-
-
 <a id="nestedatt--cors"></a>
 ### Nested Schema for `cors`
 
 Optional:
 
+- `always` (Boolean) Add the Access-Control-Allow-Origin header to the response regardless of the status code (in the case of always=true) or only for response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308 (in the case of always=false)
 - `credentials` (Boolean) Set the Access-Control-Allow-Credentials header
 - `disable` (Boolean) Disable CORS
 - `domains` (Set of String) Allowed domains
@@ -332,47 +308,6 @@ Required:
 - `start` (String) Start of interval in ISO 8601-1:2019 format
 
 
-<a id="nestedatt--packaging"></a>
-### Nested Schema for `packaging`
-
-Optional:
-
-- `mp4` (Attributes) Conversion parameters (see [below for nested schema](#nestedatt--packaging--mp4))
-
-<a id="nestedatt--packaging--mp4"></a>
-### Nested Schema for `packaging.mp4`
-
-Required:
-
-- `output_protocols` (Set of String) Formats in which videos are planned to be distributed. One of [MPEG-DASH, HLS]
-
-
-<a id="nestedatt--rewrite"></a>
-### Nested Schema for `rewrite`
-
-Optional:
-
-- `flag` (String) Rewrite option
-- `from` (String) Regex for the source URL
-- `to` (String) Address to which the redirection will occur
-- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins; Allowed values: `edge`, `shield` (default: `edge`); `scope` = `shield` value can only be set for a limited list of accounts
-
-<a id="nestedatt--allowed_http_methods"></a>
-### Nested Schema for `allowed_http_methods`
-
-Description:
-
-- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`
-
-
-<a id="nestedatt--return"></a>
-### Nested Schema for `return`
-
-Required:
-
-- `http_status_code` (Integer) Response status code. Valid range: 100 to 599
-- `body` (String) Response body; cannot be used with `return.url`
-- `url` (String) Absolute redirect URL (only for 301, 302, 303, 307, 308 codes); cannot be used with `return.body`
 
 
 <a id="nestedatt--locations"></a>
@@ -380,6 +315,7 @@ Required:
 
 Optional:
 
+- `allowed_http_methods` (Set of String) List of allowed HTTP methods. GET, HEAD and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: POST, PUT, DELETE, MKCOL, COPY, MOVE, PROPFIND, PROPPATCH, LOCK, UNLOCK, PATCH.
 - `auth` (Attributes) User request authorization settings. This service is paid according to the tariffs indicated in dashboard. (see [below for nested schema](#nestedatt--locations--auth))
 - `cache` (Attributes) Cache settings (see [below for nested schema](#nestedatt--locations--cache))
 - `compress` (Attributes) Compression settings. This service is paid according to the tariffs indicated in dashboard. (see [below for nested schema](#nestedatt--locations--compress))
@@ -387,11 +323,11 @@ Optional:
 - `headers` (Attributes) Header settings (see [below for nested schema](#nestedatt--locations--headers))
 - `ioss` (Boolean) Image Optimization and Modification
 - `limitations` (Attributes) Restriction of distribution by geography, IP, Referer or UserAgent. This service is paid according to the tariffs indicated in dashboard (see [below for nested schema](#nestedatt--locations--limitations))
+- `order` (Number) Order of regular expression matching (specified only for locations with regular expressions)
 - `origin` (Attributes) Content source (origin) settings (see [below for nested schema](#nestedatt--locations--origin))
 - `packaging` (Attributes) Video Converting (see [below for nested schema](#nestedatt--locations--packaging))
+- `return` (Attributes) HTTP response code and body for content hosted on a CDN. (see [below for nested schema](#nestedatt--locations--return))
 - `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--locations--rewrite))
-- `allowed_http_methods` (Set of String) List of allowed HTTP methods (see [below for nested schema](#nestedatt--locations--allowed_http_methods))
-- `return` (Attributes) Force return instead of content (see [below for nested schema](#nestedatt--locations--return))
 
 <a id="nestedatt--locations--auth"></a>
 ### Nested Schema for `locations.auth`
@@ -418,15 +354,15 @@ Optional:
 
 Optional:
 
-- `args_whitelist` (Set of String) List of query string parameters to consider when caching (requires cache.consider_args=true); cannot be used with `args_blacklist`
-- `args_blacklist` (Set of String) List of query string parameters to ignore when caching (requires cache.consider_args=true); cannot be used with `args_whitelist`
+- `args_blacklist` (Set of String) List of query string parameters to ignore when caching (requires cache.consider_args=true); cannot be used with args_whitelist
+- `args_whitelist` (Set of String) List of query string parameters to consider when caching (requires cache.consider_args=true); cannot be used with args_blacklist
 - `consider_args` (Boolean) Consider query string in caching
 - `consider_cookies` (Boolean) Consider cookies in caching
-- `cookies_whitelist` (Set of String) List of cookie to consider when caching (requires cache.consider_cookies=true); cannot be used with `cookies_blacklist`
-- `cookies_blacklist` (Set of String) List of cookie to ignore when caching (requires cache.consider_cookies=true); cannot be used with `cookies_whitelist`
+- `cookies_blacklist` (Set of String) List of cookie to ignore when caching (requires cache.consider_cookies=true; cannot be used with cookies_whitelist))
+- `cookies_whitelist` (Set of String) List of cookie to consider when caching (requires cache.consider_cookies=true), cannot be used with cookies_blacklist)
 - `disable` (Boolean) Do not cache content
+- `stale_conditions` (Set of String) List of options for setting conditions for returning outdated cached content in case of source unavailability (requires use_stale=true)
 - `use_stale` (Boolean) Enables/disables the ability to give outdated cached content if the origin is unavailable
-- `stale_conditions` (Set of String) List of options for setting conditions for returning outdated cached content in case of source unavailability (requires locations.cache.staleconditions=true) (see [below for nested schema](#nestedatt--locations--cache--stale_conditions))
 - `valid` (Attributes) Cache time settings (see [below for nested schema](#nestedatt--locations--cache--valid))
 
 <a id="nestedatt--locations--cache--valid"></a>
@@ -434,19 +370,13 @@ Optional:
 
 Optional:
 
+- `browser` (String) Cache time in end-users' browsers (applies to response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308)
 - `c_2xx` (String) Cache time for 2xx codes
 - `c_3xx` (String) Cache time for 3xx codes
 - `c_4xx` (String) Cache time for 4xx codes
 - `c_5xx` (String) Cache time for 5xx codes
 - `force` (Boolean) Ignore cache headers
 
-
-<a id="nestedatt--locations--cache--stale_conditions"></a>
-### Nested Schema for `locations.cache.stale_conditions`
-
-Description:
-
-- List of options for setting conditions for returning outdated cached content in case of source unavailability (requires locations.cache.use_stale=true). Allowed settings: `error`, `timeout`, `invalid_header`, `updating`, `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, `http_504`
 
 
 <a id="nestedatt--locations--compress"></a>
@@ -463,6 +393,7 @@ Optional:
 
 Optional:
 
+- `always` (Boolean) Add the Access-Control-Allow-Origin header to the response regardless of the status code (in the case of always=true) or only for response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308 (in the case of always=false)
 - `credentials` (Boolean) Set the Access-Control-Allow-Credentials header
 - `disable` (Boolean) Disable CORS
 - `domains` (Set of String) Allowed domains
@@ -614,6 +545,7 @@ Optional:
 
 - `aws` (Attributes) Parameters for using AWS authorization when requesting origin (see [below for nested schema](#nestedatt--locations--origin--aws))
 - `connect_timeout` (String) Connect timeout in seconds
+- `forward_host_header` (Boolean) Should the request to the Origin include the Host header that was sent in the request to the CDN (cannot be set together with origin.hostname)
 - `hostname` (String) Host header when requesting origin
 - `https` (Boolean) Whether to use HTTPS when requesting origin
 - `read_timeout` (String) Read timeout in seconds
@@ -666,6 +598,20 @@ Required:
 - `output_protocols` (Set of String) Formats in which videos are planned to be distributed. One of [MPEG-DASH, HLS]
 
 
+
+<a id="nestedatt--locations--return"></a>
+### Nested Schema for `locations.return`
+
+Required:
+
+- `http_status_code` (Number) Response status code. Valid range: 100 to 599
+
+Optional:
+
+- `body` (String) Response body; cannot be used with return.url
+- `url` (String) Absolute redirect URL (only for 301, 302, 303, 307, 308 codes); cannot be used with return.body
+
+
 <a id="nestedatt--locations--rewrite"></a>
 ### Nested Schema for `locations.rewrite`
 
@@ -673,23 +619,58 @@ Optional:
 
 - `flag` (String) Rewrite option
 - `from` (String) Regex for the source URL
+- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins
 - `to` (String) Address to which the redirection will occur
-- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins; Allowed values: `edge`, `shield` (default: `edge`); `scope` = `shield` value can only be set for a limited list of accounts
-
-<a id="nestedatt--locations--allowed_http_methods"></a>
-### Nested Schema for `locations.allowed_http_methods`
-
-Description:
-
-- List of allowed HTTP methods. `GET`, `HEAD` and OPTIONS methods are always allowed, they cannot be controlled. Allowed HTTP methods: `POST`, `PUT`, `DELETE`, `MKCOL`, `COPY`, `MOVE`, `PROPFIND`, `PROPPATCH`, `LOCK`, `UNLOCK`, `PATCH`
 
 
-<a id="nestedatt--locations--return"></a>
-### Nested Schema for `locations.return`
+
+<a id="nestedatt--packaging"></a>
+### Nested Schema for `packaging`
+
+Optional:
+
+- `mp4` (Attributes) Conversion parameters (see [below for nested schema](#nestedatt--packaging--mp4))
+
+<a id="nestedatt--packaging--mp4"></a>
+### Nested Schema for `packaging.mp4`
 
 Required:
 
-- `http_status_code` (Integer) Response status code. Valid range: 100 to 599
-- `body` (String) Response body; cannot be used with `locations.return.url`
-- `url` (String) Absolute redirect URL (only for 301, 302, 303, 307, 308 codes); cannot be used with `locations.return.body`
+- `output_protocols` (Set of String) Formats in which videos are planned to be distributed. One of [MPEG-DASH, HLS]
 
+
+
+<a id="nestedatt--return"></a>
+### Nested Schema for `return`
+
+Required:
+
+- `http_status_code` (Number) Response status code. Valid range: 100 to 599
+
+Optional:
+
+- `body` (String) Response body; cannot be used with return.url
+- `url` (String) Absolute redirect URL (only for 301, 302, 303, 307, 308 codes); cannot be used with return.body
+
+
+<a id="nestedatt--rewrite"></a>
+### Nested Schema for `rewrite`
+
+Optional:
+
+- `flag` (String) Rewrite option
+- `from` (String) Regex for the source URL
+- `scope` (String) The parameter allows you to choose where the rewrite will be performed: on edges or on midorigins
+- `to` (String) Address to which the redirection will occur
+
+
+<a id="nestedatt--robots"></a>
+### Nested Schema for `robots`
+
+Required:
+
+- `type` (String) Type of robots.txt handling. One of [deny, custom, cached]
+
+Optional:
+
+- `robots_content` (String) Text of robots.txt (only for type=custom)

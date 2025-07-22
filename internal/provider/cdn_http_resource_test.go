@@ -181,6 +181,7 @@ func TestResource(t *testing.T) {
 						credentials = true
 						max_age = 120
 						disable = false
+						always = true
 					}
 					names = [
 						"cdn.test.com"
@@ -365,6 +366,7 @@ func TestResource(t *testing.T) {
 								credentials = true
 								max_age = 120
 								disable = false
+								always = true
 							}
 							limitations = {
 								geo = [
@@ -524,6 +526,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "cors.credentials", "true"),
 					resource.TestCheckResourceAttr(resource_name, "cors.max_age", "120"),
 					resource.TestCheckResourceAttr(resource_name, "cors.disable", "false"),
+					resource.TestCheckResourceAttr(resource_name, "cors.always", "true"),
 					resource.TestCheckResourceAttr(resource_name, "names.0", "cdn.test.com"),
 					resource.TestCheckResourceAttr(resource_name, "limitations.geo.0.default_action", "allow"),
 					resource.TestCheckResourceAttr(resource_name, "limitations.geo.0.exclude.0.action", "deny"),
@@ -600,6 +603,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.credentials", "true"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.max_age", "120"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.disable", "false"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.cors.always", "true"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.default_action", "allow"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.exclude.0.action", "deny"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.limitations.geo.0.exclude.0.country", "RU"),

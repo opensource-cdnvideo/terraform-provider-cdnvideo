@@ -217,6 +217,7 @@ func (m CorsModel) AttributeTypes() map[string]attr.Type {
 		"credentials": types.BoolType,
 		"max_age":     types.Int64Type,
 		"disable":     types.BoolType,
+		"always":      types.BoolType,
 	}
 }
 
@@ -811,6 +812,10 @@ func CorsSchema() schema.Attribute {
 			},
 			"disable": schema.BoolAttribute{
 				Description: "Disable CORS",
+				Optional:    true,
+			},
+			"always": schema.BoolAttribute{
+				Description: "Add the Access-Control-Allow-Origin header to the response regardless of the status code (in the case of always=true) or only for response codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308 (in the case of always=false)",
 				Optional:    true,
 			},
 		},
