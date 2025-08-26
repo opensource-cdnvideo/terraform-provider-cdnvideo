@@ -18,3 +18,9 @@ FEATURES:
 FEATURES:
 
 - Added "always" parameter for the cors option
+
+## 1.4.1
+
+FEATURES:
+
+- Parameter "rewrite" now available for all clients

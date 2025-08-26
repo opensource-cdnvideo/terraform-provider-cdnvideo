@@ -41,7 +41,7 @@ description: |-
 - `no_http2` (Boolean) Disable HTTP2
 - `packaging` (Attributes) Video Converting (see [below for nested schema](#nestedatt--packaging))
 - `return` (Attributes) HTTP response code and body for content hosted on a CDN. (see [below for nested schema](#nestedatt--return))
-- `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--rewrite))
+- `rewrite` (Attributes Set) Rules for changing request paths (see [below for nested schema](#nestedatt--rewrite))
 - `robots` (Attributes) robots.txt settings (see [below for nested schema](#nestedatt--robots))
 - `slice_size_megabytes` (Number) Slice size in MB (only for tuning=large)
 - `ssl_protocols` (Set of String) List of enabled TLS versions. Allowed values: 'TLSv1', 'TLSv1.1', 'TLSv1.2', 'TLSv1.3', 'SSLv3'; cannot be used with modern_tls_only
@@ -327,7 +327,7 @@ Optional:
 - `origin` (Attributes) Content source (origin) settings (see [below for nested schema](#nestedatt--locations--origin))
 - `packaging` (Attributes) Video Converting (see [below for nested schema](#nestedatt--locations--packaging))
 - `return` (Attributes) HTTP response code and body for content hosted on a CDN. (see [below for nested schema](#nestedatt--locations--return))
-- `rewrite` (Attributes Set) This option is available upon request. Please contact your account manager (see [below for nested schema](#nestedatt--locations--rewrite))
+- `rewrite` (Attributes Set) Rules for changing request paths (see [below for nested schema](#nestedatt--locations--rewrite))
 
 <a id="nestedatt--locations--auth"></a>
 ### Nested Schema for `locations.auth`

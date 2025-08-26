@@ -1025,7 +1025,7 @@ func ReturnSchema() schema.Attribute {
 
 func RewriteSchema() schema.Attribute {
 	return schema.SetNestedAttribute{
-		Description: "This option is available upon request. Please contact your account manager",
+		Description: "Rules for changing request paths",
 		Optional:    true,
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: map[string]schema.Attribute{

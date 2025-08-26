@@ -206,14 +206,14 @@ resource "cdnvideo_http" "edu" {
       ]
     }
   }
-  # rewrite = [
-  #   {
-  #     from  = "^/cdn/.+(/_video_.+)"
-  #     to    = "$1"
-  #     flag  = "break"
-  #     scope = "edge"
-  #   }
-  # ]
+  rewrite = [
+    {
+      from  = "^/cdn/.+(/_video_.+)"
+      to    = "$1"
+      flag  = "break"
+      scope = "edge"
+    }
+  ]
   allowed_http_methods = [
     "POST",
     "PUT",
@@ -411,14 +411,14 @@ resource "cdnvideo_http" "edu" {
         body             = "test1"
         # url = "https://www.cdnvideo.ru/"
       }
-      # rewrite = [
-      #   {
-      #     from  = "^/cdn/.+(/_video_.+)"
-      #     to    = "$1"
-      #     flag  = "break"
-      #     scope = "edge"
-      #   }
-      # ]
+      rewrite = [
+        {
+          from  = "^/cdn/.+(/_video_.+)"
+          to    = "$1"
+          flag  = "break"
+          scope = "edge"
+        }
+      ]
     }
   }
 }
