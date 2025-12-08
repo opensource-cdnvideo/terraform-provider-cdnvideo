@@ -15,8 +15,9 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource              = &httpResource{}
-	_ resource.ResourceWithConfigure = &httpResource{}
+	_ resource.Resource                = &httpResource{}
+	_ resource.ResourceWithConfigure   = &httpResource{}
+	_ resource.ResourceWithImportState = &httpResource{}
 )
 
 func NewHTTPResource() resource.Resource {
@@ -81,6 +82,10 @@ func (resource *httpResource) Create(ctx context.Context, req resource.CreateReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+func (r *httpResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	// Retrieve import ID and save to id attribute
+	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }
 
 // Read refreshes the Terraform state with the latest data.

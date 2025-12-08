@@ -24,3 +24,9 @@ FEATURES:
 FEATURES:
 
 - Parameter "rewrite" now available for all clients
+
+## 1.5.0
+
+FEATURES:
+
+- Add ability to import cdn resource

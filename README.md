@@ -53,7 +53,7 @@ It's recommended to use the [latest version of Terraform](https://developer.hash
      required_providers {
        cdnvideo = {
          source  = "opensource-cdnvideo/cdnvideo"
-         version = "1.4.1"   # specify the version (select from https://github.com/opensource-cdnvideo/terraform-provider-cdnvideo/releases)
+         version = "1.5.0"   # specify the version (select from https://github.com/opensource-cdnvideo/terraform-provider-cdnvideo/releases)
        }
      }
    }
@@ -76,4 +76,3 @@ It's recommended to use the [latest version of Terraform](https://developer.hash
 ### Writing Module Files
 
 Refer to the examples in the `./examples` folder to create your module files.
-
