@@ -197,7 +197,9 @@ func (p *cdnvideoProvider) Configure(ctx context.Context, req provider.Configure
 
 // DataSources defines the data sources implemented in the provider.
 func (p *cdnvideoProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return nil
+	return []func() datasource.DataSource{
+		NewHTTPResourceStatusDataSource,
+	}
 }
 
 // Resources defines the resources implemented in the provider.

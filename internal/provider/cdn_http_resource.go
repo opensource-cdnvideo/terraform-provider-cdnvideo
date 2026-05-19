@@ -75,6 +75,7 @@ func (resource *httpResource) Create(ctx context.Context, req resource.CreateReq
 	plan.CreationTs = types.Int64Value(http_resource.CreationTs)
 	plan.CdnDomain = types.StringValue(http_resource.CdnDomain)
 	plan.CreationSource = types.StringValue(http_resource.CreationSource)
+	plan.StatusUrl = types.StringValue(resource.proxy.GetStatusURL(http_resource.ID))
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -108,7 +109,7 @@ func (resource *httpResource) Read(ctx context.Context, req resource.ReadRequest
 	tflog.Debug(ctx, "Successfully Read cdn http resource")
 
 	// Map response body to model
-	state, diags := GenerateState(http_resource, ctx)
+	state, diags := GenerateState(http_resource, ctx, resource.proxy.GetStatusURL(resource_id))
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -157,7 +158,7 @@ func (resource *httpResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Update resource state
-	state, diags := GenerateState(http_resource, ctx)
+	state, diags := GenerateState(http_resource, ctx, resource.proxy.GetStatusURL(plan.ID.ValueString()))
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -207,7 +208,7 @@ func (resource *httpResource) Configure(_ context.Context, req resource.Configur
 	resource.proxy = proxy
 }
 
-func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Context) (CdnHttpResourceModel, diag.Diagnostics) {
+func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Context, statusUrl string) (CdnHttpResourceModel, diag.Diagnostics) {
 	servers, all_diags := types.MapValueFrom(ctx, ServersModel{}.AttributeTypes(), http_resource.Origin.Servers)
 
 	locations, diags := types.MapValueFrom(ctx, LocationsModel{}.AttributeTypes(), http_resource.Locations)
@@ -300,6 +301,7 @@ func GenerateState(http_resource configuration.CdnHttpResource, ctx context.Cont
 		Return:             resourcereturn,
 		Locations:          locations,
 		CreationSource:     types.StringValue(http_resource.CreationSource),
+		StatusUrl:          types.StringValue(statusUrl),
 	}
 
 	return state, all_diags

@@ -55,6 +55,7 @@ description: |-
 - `creation_source` (String) Source of creation, set to 'terraform' by default
 - `creation_ts` (Number) Timestamp of resource creation
 - `id` (String) HTTP resource ID
+- `status_url` (String) URL to check the configuration distribution status across the CDN. Possible statuses: Completed (active), Processing (applying settings), Error.
 
 <a id="nestedatt--origin"></a>
 ### Nested Schema for `origin`

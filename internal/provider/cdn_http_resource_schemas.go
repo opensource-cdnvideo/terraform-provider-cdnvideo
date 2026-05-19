@@ -49,6 +49,7 @@ type CdnHttpResourceModel struct {
 	Return             types.Object `tfsdk:"return"`
 	Locations          types.Map    `tfsdk:"locations"`
 	CreationSource     types.String `tfsdk:"creation_source"`
+	StatusUrl          types.String `tfsdk:"status_url"`
 }
 
 type OriginModel struct {
@@ -506,6 +507,13 @@ func (d *httpResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 			},
 			"creation_source": schema.StringAttribute{
 				Description: "Source of creation, set to 'terraform' by default",
+				Computed:    true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
+			},
+			"status_url": schema.StringAttribute{
+				Description: "URL to check the configuration distribution status across the CDN. Possible statuses: Completed (active), Processing (applying settings), Error.",
 				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),

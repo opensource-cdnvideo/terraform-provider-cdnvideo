@@ -426,3 +426,25 @@ resource "cdnvideo_http" "edu" {
 output "edu_resource" {
   value = cdnvideo_http.edu
 }
+
+output "status_url" {
+  description = "URL to check the CDN configuration distribution status"
+  value       = cdnvideo_http.edu.status_url
+}
+
+# Check block to verify CDN configuration distribution status.
+# This runs on every plan/apply and shows a warning if the configuration
+# is still being distributed across the CDN.
+# Requires Terraform >= 1.5.0
+# See: https://developer.hashicorp.com/terraform/tutorials/configuration-language/checks
+check "cdn_distribution_status" {
+  data "cdnvideo_http_status" "edu_status" {
+    resource_id = cdnvideo_http.edu.id
+    depends_on  = [cdnvideo_http.edu]
+  }
+
+  assert {
+    condition     = data.cdnvideo_http_status.edu_status.status == "Completed"
+    error_message = "CDN configuration is still being distributed. Current status: ${data.cdnvideo_http_status.edu_status.status}. Message: ${data.cdnvideo_http_status.edu_status.message}"
+  }
+}

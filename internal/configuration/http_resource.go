@@ -8,6 +8,7 @@ import (
 )
 
 const ConfigurationApiURL string = "https://api.cdnvideo.ru/cdn/api/v1/%s/resource/http/%s"
+const StatusApiURL string = "https://api.cdnvideo.ru/cdn/api/v1/%s/status/http/%s"
 
 type CdnHttpResource struct {
 	ID                 string               `json:"id,omitempty"`
@@ -216,6 +217,12 @@ type Return struct {
 	Url            *string `json:"url,omitempty" tfsdk:"url"`
 }
 
+type ResourceStatus struct {
+	Resource string `json:"resource"`
+	Status   string `json:"status"`
+	Message  string `json:"message"`
+}
+
 func (proxy *ConfigurationApiProxy) GetHttpResources() ([]CdnHttpResource, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf(ConfigurationApiURL, proxy.AccountName, ""), nil)
 	if err != nil {
@@ -306,8 +313,8 @@ func (proxy *ConfigurationApiProxy) UpdateHttpResource(httpResource CdnHttpResou
 		return nil, fmt.Errorf("message: %s, description: %s", response.Message, response.Description)
 	}
 	return &response, nil
-
 }
+
 func (proxy *ConfigurationApiProxy) DeactivateHttpResource(resource_id string) error {
 	active := false
 	httpResource := CdnHttpResource{Active: &active}
@@ -335,4 +342,28 @@ func (proxy *ConfigurationApiProxy) DeactivateHttpResource(resource_id string) e
 		return fmt.Errorf("message: %s, description: %s", response.Message, response.Description)
 	}
 	return nil
+}
+
+func (proxy *ConfigurationApiProxy) GetStatusURL(resourceID string) string {
+	return fmt.Sprintf(StatusApiURL, proxy.AccountName, resourceID)
+}
+
+func (proxy *ConfigurationApiProxy) GetHttpResourceStatus(resourceID string) (ResourceStatus, error) {
+	status := ResourceStatus{}
+	req, err := http.NewRequest("GET", proxy.GetStatusURL(resourceID), nil)
+	if err != nil {
+		return status, err
+	}
+
+	body, err := proxy.MakeRequest(req)
+	if err != nil {
+		return status, err
+	}
+
+	err = json.Unmarshal(body, &status)
+	if err != nil {
+		return status, err
+	}
+
+	return status, nil
 }
