@@ -75,10 +75,11 @@ type AWS struct {
 }
 
 type Servers struct {
-	Port     *int  `json:"port,omitempty" tfsdk:"port"`
-	Weight   *int  `json:"weight,omitempty" tfsdk:"weight"`
-	MaxFails *int  `json:"max_fails,omitempty" tfsdk:"max_fails"`
-	Backup   *bool `json:"backup,omitempty" tfsdk:"backup"`
+	Port        *int    `json:"port,omitempty" tfsdk:"port"`
+	Weight      *int    `json:"weight,omitempty" tfsdk:"weight"`
+	MaxFails    *int    `json:"max_fails,omitempty" tfsdk:"max_fails"`
+	FailTimeout *string `json:"fail_timeout,omitempty" tfsdk:"fail_timeout"`
+	Backup      *bool   `json:"backup,omitempty" tfsdk:"backup"`
 }
 
 type Cache struct {

@@ -40,6 +40,7 @@ func TestResource(t *testing.T) {
 					// Check all other options not set
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.weight"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.max_fails"),
+					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.fail_timeout"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.backup"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.hostname"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.https"),
@@ -85,6 +86,7 @@ func TestResource(t *testing.T) {
 								port = 443
 								weight = 1
 								max_fails = 10
+								fail_timeout = "10s"
 								backup = false
 							}
 							"storage.yandexcloud.net" = {}
@@ -309,10 +311,11 @@ func TestResource(t *testing.T) {
 							origin = {
 								servers = {
 									"google.com" = {
-										port      = 443
-										weight    = 1
-										max_fails = 10
-										backup    = false
+										port         = 443
+										weight       = 1
+										max_fails    = 10
+										fail_timeout = "10s"
+										backup       = false
 									}
 									"storage.yandexcloud.net" = {}
 								}
@@ -473,6 +476,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "origin.servers.google.com.port", "443"),
 					resource.TestCheckResourceAttr(resource_name, "origin.servers.google.com.weight", "1"),
 					resource.TestCheckResourceAttr(resource_name, "origin.servers.google.com.max_fails", "10"),
+					resource.TestCheckResourceAttr(resource_name, "origin.servers.google.com.fail_timeout", "10s"),
 					resource.TestCheckResourceAttr(resource_name, "origin.servers.google.com.backup", "false"),
 					resource.TestCheckResourceAttrSet(resource_name, "origin.servers.storage.yandexcloud.net.%"),
 					resource.TestCheckResourceAttr(resource_name, "origin.hostname", "string"),
@@ -576,6 +580,7 @@ func TestResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.port", "443"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.weight", "1"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.max_fails", "10"),
+					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.fail_timeout", "10s"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.servers.google.com.backup", "false"),
 					resource.TestCheckResourceAttrSet(resource_name, "locations.~path_to_content.origin.servers.storage.yandexcloud.net.%"),
 					resource.TestCheckResourceAttr(resource_name, "locations.~path_to_content.origin.hostname", "string"),
@@ -671,6 +676,7 @@ func TestResource(t *testing.T) {
 					// Check all other options not set
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.weight"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.max_fails"),
+					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.fail_timeout"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.servers.google.com.backup"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.hostname"),
 					resource.TestCheckNoResourceAttr(resource_name, "origin.https"),

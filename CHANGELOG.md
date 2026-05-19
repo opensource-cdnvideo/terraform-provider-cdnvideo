@@ -30,3 +30,11 @@ FEATURES:
 FEATURES:
 
 - Add ability to import cdn resource
+
+## 1.6.0
+
+FEATURES:
+
+- Add data source for check and compute status url in resource
+- Add "fail_timeout" parameter for the server option
+- Add flag for sensitive data

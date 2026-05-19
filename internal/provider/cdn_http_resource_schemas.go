@@ -91,10 +91,11 @@ type ServersModel struct{}
 func (m ServersModel) AttributeTypes() attr.Type {
 	return types.ObjectType{
 		AttrTypes: map[string]attr.Type{
-			"port":      types.Int64Type,
-			"weight":    types.Int64Type,
-			"max_fails": types.Int64Type,
-			"backup":    types.BoolType,
+			"port":         types.Int64Type,
+			"weight":       types.Int64Type,
+			"max_fails":    types.Int64Type,
+			"fail_timeout": types.StringType,
+			"backup":       types.BoolType,
 		},
 	}
 }
@@ -626,6 +627,10 @@ func OriginSchema(required, optional bool) schema.Attribute {
 							Description: "Number of failed attempts for balancing",
 							Optional:    true,
 						},
+						"fail_timeout": schema.StringAttribute{
+							Description: "Time window for counting failures and duration of server being marked as unavailable.",
+							Optional:    true,
+						},
 						"backup": schema.BoolAttribute{
 							Description: "Is origin a backup?",
 							Optional:    true,
@@ -669,7 +674,8 @@ func OriginSchema(required, optional bool) schema.Attribute {
 								Required: true,
 							},
 							"secret_key": schema.StringAttribute{
-								Required: true,
+								Required:  true,
+								Sensitive: true,
 							},
 						},
 					},
@@ -737,6 +743,7 @@ func AuthSchema() schema.Attribute {
 					"secret": schema.StringAttribute{
 						Description: "Secret word",
 						Optional:    true,
+						Sensitive:   true,
 					},
 					"forever": schema.BoolAttribute{
 						Description: "No time limit",

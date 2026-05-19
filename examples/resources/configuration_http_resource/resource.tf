@@ -2,10 +2,11 @@ resource "cdnvideo_http" "edu" {
   origin = {
     servers = {
       "google.com" = {
-        port      = 443
-        weight    = 1
-        max_fails = 10
-        backup    = false
+        port         = 443
+        weight       = 1
+        max_fails    = 10
+        fail_timeout = "10s"
+        backup       = false
       }
       "storage.yandexcloud.net" = {}
     }
@@ -247,10 +248,11 @@ resource "cdnvideo_http" "edu" {
       origin = {
         servers = {
           "google.com" = {
-            port      = 443
-            weight    = 1
-            max_fails = 10
-            backup    = false
+            port         = 443
+            weight       = 1
+            max_fails    = 10
+            fail_timeout = "10s"
+            backup       = false
           }
           "storage.yandexcloud.net" = {}
         }

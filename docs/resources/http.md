@@ -83,6 +83,7 @@ Optional:
 Optional:
 
 - `backup` (Boolean) Is origin a backup?
+- `fail_timeout` (String) Time window for counting failures and duration of server being marked as unavailable.
 - `max_fails` (Number) Number of failed attempts for balancing
 - `port` (Number) Origin port
 - `weight` (Number) Weight for balancing
@@ -101,7 +102,7 @@ Required:
 Required:
 
 - `access_key` (String)
-- `secret_key` (String)
+- `secret_key` (String, Sensitive)
 
 
 
@@ -122,7 +123,7 @@ Optional:
 
 - `anywhere` (Boolean) Do not consider IP address
 - `forever` (Boolean) No time limit
-- `secret` (String) Secret word
+- `secret` (String, Sensitive) Secret word
 
 
 
@@ -346,7 +347,7 @@ Optional:
 
 - `anywhere` (Boolean) Do not consider IP address
 - `forever` (Boolean) No time limit
-- `secret` (String) Secret word
+- `secret` (String, Sensitive) Secret word
 
 
 
@@ -561,6 +562,7 @@ Optional:
 Optional:
 
 - `backup` (Boolean) Is origin a backup?
+- `fail_timeout` (String) Time window for counting failures and duration of server being marked as unavailable.
 - `max_fails` (Number) Number of failed attempts for balancing
 - `port` (Number) Origin port
 - `weight` (Number) Weight for balancing
@@ -579,7 +581,7 @@ Required:
 Required:
 
 - `access_key` (String)
-- `secret_key` (String)
+- `secret_key` (String, Sensitive)
 
 
 
