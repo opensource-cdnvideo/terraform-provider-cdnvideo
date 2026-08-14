@@ -148,7 +148,7 @@ type GeoLimitations struct {
 	Exclude *[]struct {
 		Action  *string `json:"action,omitempty" tfsdk:"action"`
 		Country *string `json:"country,omitempty" tfsdk:"country"`
-		Region  *string `json:"region,omitempty" tfsdk:"region"`
+		Region  *string `json:"region" tfsdk:"region"`
 	} `json:"exclude,omitempty" tfsdk:"exclude"`
 	DefaultAction *string  `json:"default_action,omitempty" tfsdk:"default_action"`
 	Times         *[]Times `json:"times,omitempty" tfsdk:"times"`

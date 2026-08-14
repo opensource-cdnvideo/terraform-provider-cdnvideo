@@ -217,6 +217,9 @@ Required:
 
 - `action` (String) Action. One of [allow, deny]
 - `country` (String) Country code in ISO 3166-1 alpha-2 format
+
+Optional:
+
 - `region` (String) Region code in ISO 3166-2 format or null
 
 
@@ -441,6 +444,9 @@ Required:
 
 - `action` (String) Action. One of [allow, deny]
 - `country` (String) Country code in ISO 3166-1 alpha-2 format
+
+Optional:
+
 - `region` (String) Region code in ISO 3166-2 format or null
 
 

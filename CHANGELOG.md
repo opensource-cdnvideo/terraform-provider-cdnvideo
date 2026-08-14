@@ -38,3 +38,9 @@ FEATURES:
 - Add data source for check and compute status url in resource
 - Add "fail_timeout" parameter for the server option
 - Add flag for sensitive data
+
+## 1.6.1
+
+FEATURES:
+
+- Fix optional region param

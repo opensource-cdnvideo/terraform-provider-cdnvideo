@@ -21,7 +21,7 @@ type AuthStruct struct {
 
 func NewProxy(username, password, account_name *string) (*ConfigurationApiProxy, error) {
 	proxy := ConfigurationApiProxy{
-		HTTPClient:  &http.Client{Timeout: 10 * time.Second},
+		HTTPClient:  &http.Client{Timeout: 30 * time.Second},
 		AccountName: *account_name,
 		Auth: AuthStruct{
 			Username: *username,

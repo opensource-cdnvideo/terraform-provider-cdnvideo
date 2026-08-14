@@ -901,7 +901,7 @@ func LimitationsSchema() schema.Attribute {
 									},
 									"region": schema.StringAttribute{
 										Description: "Region code in ISO 3166-2 format or null",
-										Required:    true,
+										Optional:    true,
 									},
 								},
 							},
